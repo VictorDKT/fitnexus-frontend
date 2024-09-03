@@ -5,10 +5,13 @@ import { FormGroup } from '../../components/FormGroup/FormGroup';
 import { Button } from '../../components/Button/Button';
 import { useState } from 'react';
 import { validateAllInputs, validateInput } from '../../Tools/validateInputs';
+import { loginRequest } from '../../services/AuthService';
+import { useAuth } from '../../context/Auth';
 
 export function LoginPage({navigation}: {navigation: any}) {
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [validations, setValidations] = useState<Record<string, unknown>>({});
+    const {signIn} = useAuth()
 
     const validationCallback = (field: string, value: string | string[] | null)=>{
         const newValidations = {...validations};
@@ -19,6 +22,25 @@ export function LoginPage({navigation}: {navigation: any}) {
     const fieldsValidations = {
         email: ["mandatory"],
         password: ["mandatory"],
+    }
+
+    async function tryLogin(login: string, password: string){
+        try {
+            // iniciar loading?
+            const data = await loginRequest(login, password);
+            signIn({
+                _id: data.id,
+                name: data.name,
+                login: data.login,
+                role: data.role,
+                token: data.access_token
+            });
+            navigation.navigate("HomePage")
+        } catch (error) {
+            Alert.alert("OOPS!", "Login ou senha incorretos.", [{
+                text: "Entendi", onPress: ()=>{}
+            }]);
+        }
     }
 
     return (
@@ -66,7 +88,7 @@ export function LoginPage({navigation}: {navigation: any}) {
                             const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                             if(validationResult.success) {
-                                navigation.navigate("HomePage")
+                                tryLogin(formData.email, formData.password);
                             } else {
                                 setValidations(validationResult.errors);
                                 Alert.alert("OOPS!", "Um ou mais campos não estão preenchidos corretamente.", [{

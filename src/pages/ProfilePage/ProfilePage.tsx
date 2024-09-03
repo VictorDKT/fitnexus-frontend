@@ -5,8 +5,19 @@ import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SocialPostInput } from "../../components/SocialPost/SocialPost";
+import { useAuth } from "../../context/Auth";
+import { useEffect } from "react";
+import { useProfile } from "../../context/ProfileContext";
+import { PostComponent } from "./Post";
 
 export function ProfilePage({ navigation }: { navigation: any }) {
+    const {signOut, authData} = useAuth();
+    const {loadProfile, profile, loading} = useProfile();
+
+    useEffect(() => {
+        loadProfile()
+    }, [authData?._id])
+
     return (
         <Layout
             page='profile'
@@ -17,8 +28,9 @@ export function ProfilePage({ navigation }: { navigation: any }) {
             <View>
                 <PageHeader
                     title="Perfil"
-                    logoutFunction={()=>{
-                        navigation.navigate("LoginPage")
+                    logoutFunction={async ()=>{
+                        await signOut()
+                        navigation.navigate('LoginPage')
                     }}
                     editFunction={()=>{
                         //
@@ -28,31 +40,25 @@ export function ProfilePage({ navigation }: { navigation: any }) {
                     <View style={styles.profileBox}>
                         <Image
                             style={styles.profilePicture}
-                            source={require("./mock/foto.png")}
+                            source={{uri: profile.image}}
                         />
-                        <Text style={styles.profileTitle}>Marcelo</Text>
-                        <Text style={styles.profileText}>Treina por: Saúde</Text>
-                        <Text style={styles.profileText}>Gosto de treinar e ouvir música</Text>
+                        <Text style={styles.profileTitle}>{profile.name}</Text>
+                        <Text style={styles.profileText}>Treina por: {profile.goal}</Text>
+                        <Text style={styles.profileText}>{profile.description}</Text>
                     </View>
                     <View style={styles.friendsBox}>
                         <Text style={styles.friendsBoxTitle}>Amigos</Text>
                         <View style={styles.friendImagesContainer}>
-                            <Image
-                                style={styles.friendImage}
-                                source={require("./mock/friend.png")}
-                            />
-                            <Image
-                                style={styles.friendImage}
-                                source={require("./mock/friend.png")}
-                            />
-                            <Image
-                                style={styles.friendImage}
-                                source={require("./mock/friend.png")}
-                            />
-                            <Image
-                                style={styles.friendImage}
-                                source={require("./mock/friend.png")}
-                            />
+                            {profile.friends?.map((friend, index) => {
+                                return (
+                                    <Image
+                                        key={index}
+                                        style={styles.friendImage}
+                                        source={{uri: friend.image}}
+                                    />
+                                )
+                            })}
+
                         </View>
                     </View>
                     <View style={styles.achivementsBox}>
@@ -111,44 +117,10 @@ export function ProfilePage({ navigation }: { navigation: any }) {
                     <View style={styles.postBox}>
                         <Text style={styles.postTitle}>Publicações</Text>
                         <SocialPostInput/>
-                        <ImageBackground
-                                source={require("./mock/post.png")} // URL da imagem de fundo
-                                style={styles.post}
-                        >
-                            <View style={styles.postHeader}>
-                                <Image
-                                    source={require("./mock/foto.png")} // URL da imagem de fundo
-                                    style={styles.postUserImage}
-                                />
-                                <View style={styles.postUserInfo}>
-                                    <Text style={styles.postUserName}>Marcelo</Text>
-                                    <Text style={styles.postTime}>há 5 minutos</Text>
-                                </View>
-                            </View>
-                            <View style={styles.postData}>
-                                <Text style={styles.postText}>Dia de treino muito divertido com meus amigos!</Text>
-                                <Icon name="heart" style={styles.postLiked}/>
-                            </View>
-                        </ImageBackground>
-                        <ImageBackground
-                                source={require("./mock/post.png")} // URL da imagem de fundo
-                                style={styles.post}
-                        >
-                            <View style={styles.postHeader}>
-                                <Image
-                                    source={require("./mock/foto.png")} // URL da imagem de fundo
-                                    style={styles.postUserImage}
-                                />
-                                <View style={styles.postUserInfo}>
-                                    <Text style={styles.postUserName}>Marcelo</Text>
-                                    <Text style={styles.postTime}>há 5 minutos</Text>
-                                </View>
-                            </View>
-                            <View style={styles.postData}>
-                                <Text style={styles.postText}>Dia de treino muito divertido com meus amigos!</Text>
-                                <Icon name="heart-o" style={styles.postLike}/>
-                            </View>
-                        </ImageBackground>
+                        {profile.posts?.map((post, index) => {
+                            return <PostComponent key={index} post={post}/>
+                        })}
+                      
                     </View>
                 </View>
             </View>
