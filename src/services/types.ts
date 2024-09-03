@@ -17,6 +17,7 @@ export type Profile = {
     friends: Profile[],
     posts: Post[],
     friendsRequests: Profile[],
+    training_dates: Date[],
 }
 
 export type Training = {

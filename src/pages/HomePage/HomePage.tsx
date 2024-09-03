@@ -13,16 +13,18 @@ import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
 import { Button } from "../../components/Button/Button";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { SocialPostInput } from "../../components/SocialPost/SocialPost";
-import { Post, Training } from "../../services/types";
+import { Post, Profile, Training } from "../../services/types";
 import { getFriendsPosts } from "../../services/PostService";
 import { useAuth } from "../../context/Auth";
 import { PostComponent } from "../ProfilePage/Post";
 import { getMyTrainings } from "../../services/TrainingService";
+import { getProfile } from "../../services/ProfileService";
 
 export function HomePage({ navigation }: { navigation: any }) {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [trainings, setTrainings] = useState<Training[]>([]);
+  const [profile, setProfile] = useState<Profile>({} as Profile);
   const { authData } = useAuth();
 
   async function loadPosts() {
@@ -35,14 +37,20 @@ export function HomePage({ navigation }: { navigation: any }) {
     setTrainings(trainings);
   }
 
+  async function loadProfile() {
+    const profile = await getProfile(authData?._id || "");
+    setProfile(profile);
+  }
+
   function loadAll() {
     loadPosts();
     loadTrainings();
+    loadProfile()
   }
 
   useEffect(() => {
     loadAll();
-  }, []);
+  }, [authData?._id]);
 
   return (
     <Layout
@@ -76,14 +84,14 @@ export function HomePage({ navigation }: { navigation: any }) {
           <Text style={styles.homeItemTitle}>Progresso semanal</Text>
           <View style={styles.semanalProgressContainer}>
             <View style={styles.progressValueContainer}>
-              <Text style={styles.progressValue}>2</Text>
-              <Text style={styles.progressTotalValue}>/4</Text>
+              <Text style={styles.progressValue}>{profile.training_dates?.length}</Text>
+              <Text style={styles.progressTotalValue}>/{profile.workouts_per_week}</Text>
             </View>
             <View style={styles.progressContainer}>
               <Text style={styles.progressLabel}>
-                Você treinou 2 vezes essa semana
+                Você treinou {profile.training_dates?.length} vezes essa semana
               </Text>
-              <ProgressBar progress={50} />
+              <ProgressBar progress={(profile.training_dates?.length/profile.workouts_per_week) * 100} />
             </View>
           </View>
         </View>

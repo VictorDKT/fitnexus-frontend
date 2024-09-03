@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/Button/Button";
 import { Training, TrainingExercise } from "../../services/types";
+import { finishTraining } from "../../services/TrainingService";
 
 export function ExercicioPage({ navigation, route: { params: { training },},  }: { navigation: any, route: { params: { training: Training } } }) {
     const screenWidth = Dimensions.get('window').width;
@@ -32,6 +33,15 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
         setExercicios(JSON.parse(JSON.stringify(training.exercises)));
         setCurrentExecicieIndex(0);
     }, [training?.id])
+
+    async function finish(){
+        await finishTraining()
+        Alert.alert("Parabéns!", "Exercícios do dia finalizados.", [{
+            text: "Entendi", onPress: ()=>{
+                navigation.navigate("HomePage")
+            }
+        }]);
+    }    
 
     return (
         <Layout
@@ -78,11 +88,7 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                                 callback={()=>{
                                     if(timerRunning) {
                                         if(currentExercicieIndex + 1 === exercicios.length) {
-                                            Alert.alert("Parabéns!", "Exercícios do dia finalizados.", [{
-                                                text: "Entendi", onPress: ()=>{
-                                                    navigation.navigate("HomePage")
-                                                }
-                                            }]);
+                                           finish()
                                         } else {
                                             setTimer(0);
                                             setTimerRunning(false);
