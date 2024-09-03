@@ -4,13 +4,16 @@ import styles from './ExercicioPageStyles';
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/Button/Button";
+import { Training, TrainingExercise } from "../../services/types";
 
-export function ExercicioPage({ navigation }: { navigation: any }) {
+export function ExercicioPage({ navigation, route: { params: { training },},  }: { navigation: any, route: { params: { training: Training } } }) {
     const screenWidth = Dimensions.get('window').width;
     const imageHeight = (screenWidth * 3) / 5;
     const [timer, setTimer] = useState(0);
     const [timerRunning, setTimerRunning] = useState(false);
     const [currentExercicieIndex, setCurrentExecicieIndex] = useState(0);
+    const [exercicios, setExercicios] = useState<TrainingExercise[]>([]);
+    const currentExercise: TrainingExercise = exercicios[currentExercicieIndex];
 
     useEffect(()=>{
         let interval = null;
@@ -24,33 +27,12 @@ export function ExercicioPage({ navigation }: { navigation: any }) {
         return () => clearInterval(interval);
     }, [timerRunning, timer])
 
-    const [exercicios, setExercicios] = useState([
-        {
-            name: "Flexão",
-            image: require("./mock/exercicio.png"),
-            description: "Faça flexões",
-            load: 10,
-            series: 3,
-            repetitions: 10,
-        },
-        {
-            name: "Agachamento",
-            image: require("./mock/exercicio.png"),
-            description: "Faça agachamentos",
-            load: 5,
-            series: 5,
-            repetitions: 15,
-        },
-        {
-            name: "Barra",
-            image: require("./mock/exercicio.png"),
-            description: "Faça barras",
-            load: 2,
-            series: 2,
-            repetitions: 20,
-        },
-    ]);
-    
+    useEffect(() => {
+        // deep copy of array
+        setExercicios(JSON.parse(JSON.stringify(training.exercises)));
+        setCurrentExecicieIndex(0);
+    }, [training?.id])
+
     return (
         <Layout
             page='exercicio'
@@ -68,12 +50,12 @@ export function ExercicioPage({ navigation }: { navigation: any }) {
                 />
                 <Image
                     style={{ width: screenWidth, height: imageHeight }}
-                    source={exercicios[currentExercicieIndex].image}
+                    source={{uri: currentExercise?.exercise?.image}}
                 />
                 <View style={{padding: 20, flex: 1, height: "100%"}}>
                     <View style={styles.exercicieContentBox}>
-                        <Text style={styles.exercicieTitle}>{exercicios[currentExercicieIndex].name}</Text>
-                        <Text style={styles.exercicieDescription}>{exercicios[currentExercicieIndex].description}</Text>
+                        <Text style={styles.exercicieTitle}>{currentExercise?.exercise?.name}</Text>
+                        <Text style={styles.exercicieDescription}>{currentExercise?.exercise?.description}</Text>
                     </View>
                     <View style={styles.exercicieFooter}>
                         <View style={styles.exercicieFooterButtonBox1}>
@@ -83,7 +65,7 @@ export function ExercicioPage({ navigation }: { navigation: any }) {
                                 callback={()=>{
                                     if(!timerRunning) {
                                         const newExercicies = exercicios.filter((exercicie, index)=>index !== currentExercicieIndex);
-                                        newExercicies.push(exercicios[currentExercicieIndex]);
+                                        newExercicies.push(currentExercise);
                                         setExercicios(newExercicies);
                                     }
                                 }}
