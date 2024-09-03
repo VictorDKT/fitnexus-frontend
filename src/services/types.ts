@@ -18,6 +18,14 @@ export type Profile = {
     posts: Post[],
     friendsRequests: Profile[],
     training_dates: Date[],
+    conquests: Conquest[],
+}
+
+export type Conquest = {
+    id: string,
+    name: string,
+    description: string,
+    image: string,
 }
 
 export type Training = {

@@ -79,54 +79,15 @@ export function ProfilePage({ navigation }: { navigation: any }) {
                     <View style={styles.achivementsBox}>
                         <Text style={styles.achivementsBoxTitle}>Conquistas</Text>
                         <ScrollView style={styles.achivementsContentBox} horizontal={true} showsHorizontalScrollIndicator={false}>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Inicianteeeeeeee</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
-                            <ImageBackground
-                                style={styles.achivementImage}
-                                source={require("./mock/achivement.png")}
-                            >
-                                <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>Iniciante</Text>
-                            </ImageBackground>
+                            {profile.conquests?.map((conquest, index) => (
+                                <ImageBackground
+                                    key={index}
+                                    style={styles.achivementImage}
+                                    source={{uri: conquest.image}}
+                                >
+                                    <Text style={styles.achivementText} numberOfLines={1} ellipsizeMode='tail'>{conquest.name}</Text>
+                                </ImageBackground>
+                            ))}
                         </ScrollView>
                     </View>
                     <View style={styles.postBox}>
