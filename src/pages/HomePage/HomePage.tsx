@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, ImageBackground, RefreshControl, Text, View } from 'react-native';
 import { Layout } from '../../components/Layout/Layout';
 import styles from "./HomePageStyles";
@@ -7,10 +7,29 @@ import { ProgressBar } from '../../components/ProgressBar/ProgressBar';
 import { Button } from '../../components/Button/Button';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SocialPostInput } from '../../components/SocialPost/SocialPost';
+import { Post } from '../../services/types';
+import { getFriendsPosts } from '../../services/PostService';
+import { useAuth } from '../../context/Auth';
+import { PostComponent } from '../ProfilePage/Post';
 
 export function HomePage({ navigation }: { navigation: any }) {
-    const [refreshing, setRefreshing] = useState(false);
-    
+    const [loading, setLoading] = useState(false);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const {authData} = useAuth();
+
+    async function loadPosts(){
+        const posts = await getFriendsPosts()
+        setPosts(posts)
+    }
+
+    function loadAll(){
+        loadPosts()
+    }
+
+    useEffect(() => {
+        loadAll()
+    }, [])
+
     return (
         <Layout
             page='home'
@@ -19,8 +38,8 @@ export function HomePage({ navigation }: { navigation: any }) {
             scrollable={true}
             refreshControl={
                 <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={() => setRefreshing(true)}
+                    refreshing={loading}
+                    onRefresh={loadAll}
                 />
             }
         >
@@ -32,7 +51,7 @@ export function HomePage({ navigation }: { navigation: any }) {
                     <LinearGradient style={styles.gradiant1} colors={['rgba(0, 0, 0, 0.8)', "transparent"]}/>
                     <View style={styles.homeImageContainer}>
                         <Text style={styles.academyTitle}>Academia FitNexus</Text>
-                        <Text style={styles.academySubTitle}>Olá, Marcelo!</Text>
+                        <Text style={styles.academySubTitle}>Olá, {authData?.name}!</Text>
                     </View>
                     <LinearGradient style={styles.gradiant2} colors={["transparent", 'rgba(0, 0, 0, 0.8)']}/>
                 </ImageBackground>
@@ -93,46 +112,11 @@ export function HomePage({ navigation }: { navigation: any }) {
                 </View>
                 <View>
                     <Text style={styles.homeItemTitle}>Timeline</Text>
-                    <View style={{ paddingLeft: 20, paddingRight: 20}}><SocialPostInput/></View>
+                    <View style={{ paddingLeft: 20, paddingRight: 20}}><SocialPostInput reload={loadPosts}/></View>
                     <View style={styles.postsContainer}>
-                        <ImageBackground
-                            source={require("./mock/post.png")} // URL da imagem de fundo
-                            style={styles.post}
-                        >
-                            <View style={styles.postHeader}>
-                                <Image
-                                    source={require("./mock/profile.png")} // URL da imagem de fundo
-                                    style={styles.postUserImage}
-                                />
-                                <View style={styles.postUserInfo}>
-                                    <Text style={styles.postUserName}>Julia</Text>
-                                    <Text style={styles.postTime}>há 5 minutos</Text>
-                                </View>
-                            </View>
-                            <View style={styles.postData}>
-                                <Text style={styles.postText}>Dia de treino muito divertido com meus amigos!</Text>
-                                <Icon name="heart-o" style={styles.postLike}/>
-                            </View>
-                        </ImageBackground>
-                        <ImageBackground
-                            source={require("./mock/post.png")} // URL da imagem de fundo
-                            style={styles.post}
-                        >
-                            <View style={styles.postHeader}>
-                                <Image
-                                    source={require("./mock/profile.png")} // URL da imagem de fundo
-                                    style={styles.postUserImage}
-                                />
-                                <View style={styles.postUserInfo}>
-                                    <Text style={styles.postUserName}>Julia</Text>
-                                    <Text style={styles.postTime}>há 5 minutos</Text>
-                                </View>
-                            </View>
-                            <View style={styles.postData}>
-                                <Text style={styles.postText}>Dia de treino muito divertido com meus amigos!</Text>
-                                <Icon name="heart" style={styles.postLiked}/>
-                            </View>
-                        </ImageBackground>
+                        {posts.map((post, index) => {
+                            return <PostComponent key={index} post={post} reload={loadPosts} setLoading={setLoading}/>
+                        })}
                     </View>
                 </View>
             </View>

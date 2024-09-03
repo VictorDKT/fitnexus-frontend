@@ -2,21 +2,30 @@ import { Image, ImageBackground, Text, View } from "react-native";
 import { Layout } from "../../components/Layout/Layout";
 import styles from './ProfilePageStyles';
 import { PageHeader } from "../../components/PageHeader/PageHeader";
-import { ScrollView } from "react-native-gesture-handler";
+import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SocialPostInput } from "../../components/SocialPost/SocialPost";
 import { useAuth } from "../../context/Auth";
-import { useEffect } from "react";
-import { useProfile } from "../../context/ProfileContext";
+import { useEffect, useState } from "react";
 import { PostComponent } from "./Post";
+import { getProfile } from "../../services/ProfileService";
+import { Profile } from "../../services/types";
 
 export function ProfilePage({ navigation }: { navigation: any }) {
     const {signOut, authData} = useAuth();
-    const {loadProfile, profile, loading} = useProfile();
+    const [profile, setProfile] = useState<Profile>({} as Profile);
+    const [loading, setLoading] = useState(false);
+
+    async function loadProfile(){
+        setLoading(true);
+        const profile = await getProfile(authData?._id || '')
+        setProfile(profile);
+        setLoading(false);
+    }
 
     useEffect(() => {
         loadProfile()
-    }, [authData?._id])
+    }, [])
 
     return (
         <Layout
@@ -24,6 +33,12 @@ export function ProfilePage({ navigation }: { navigation: any }) {
             navigation={navigation}
             hasNavbar={true}
             scrollable={true}
+            refreshControl={
+                <RefreshControl
+                    refreshing={loading}
+                    onRefresh={loadProfile}
+                />
+            }
         >
             <View>
                 <PageHeader
@@ -116,9 +131,9 @@ export function ProfilePage({ navigation }: { navigation: any }) {
                     </View>
                     <View style={styles.postBox}>
                         <Text style={styles.postTitle}>Publicações</Text>
-                        <SocialPostInput/>
+                        <SocialPostInput reload={loadProfile}/>
                         {profile.posts?.map((post, index) => {
-                            return <PostComponent key={index} post={post}/>
+                            return <PostComponent key={index} post={post} reload={loadProfile} setLoading={setLoading}/>
                         })}
                       
                     </View>

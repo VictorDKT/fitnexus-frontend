@@ -1,9 +1,22 @@
 import { Image, ImageBackground, Text, View } from "react-native";
 import styles from "./ProfilePageStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Post } from "../../context/ProfileContext";
+import { Post } from "../../services/types";
+import { useAuth } from "../../context/Auth";
+import { likePost } from "../../services/PostService";
 
-export function PostComponent({ post }: { post: Post }) {
+export function PostComponent({ post, reload, setLoading }: { post: Post, reload: () => void, setLoading: (loading: boolean) => void }) {
+  const {authData} = useAuth();
+
+  const isLiked = post.likes.some((like) => like.id === authData?._id);
+
+  async function like(){
+    setLoading(true)
+    await likePost(post.id)
+    reload()
+    setLoading(false)
+  }
+
   return (
     <ImageBackground
       source={{uri: post.image}} // URL da imagem de fundo
@@ -24,7 +37,7 @@ export function PostComponent({ post }: { post: Post }) {
         <Text style={styles.postText}>
             {post.content}
         </Text>
-        <Icon name="heart" style={styles.postLiked} />
+        <Icon name="heart" style={isLiked ? styles.postLiked : styles.postLike} onPress={like} />
       </View>
     </ImageBackground>
   );

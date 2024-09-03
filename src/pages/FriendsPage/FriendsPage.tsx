@@ -3,7 +3,6 @@ import { Layout } from "../../components/Layout/Layout";
 import styles from "./FriendsPageStyles";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { Button } from "../../components/Button/Button";
-import { Profile } from "../../context/ProfileContext";
 import { useEffect, useState } from "react";
 import {
   acceptFriend,
@@ -12,6 +11,8 @@ import {
   refuseFriend,
 } from "../../services/FriendsService";
 import { useAuth } from "../../context/Auth";
+import { RefreshControl } from "react-native-gesture-handler";
+import { Profile } from "../../services/types";
 
 function FriendSolicitation({
   profile,
@@ -75,20 +76,22 @@ function FriendProfile({ profile }: { profile: Profile }) {
 export function FriendsPage({ navigation }: { navigation: any }) {
   const [friends, setFriends] = useState<Profile[]>([]);
   const [requests, setRequests] = useState<Profile[]>([]);
-  const { authData } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   async function loadFriends() {
+    setLoading(true);
     const [friends, requests] = await Promise.all([
       getMyFriends(),
       getMySolicitations(),
     ]);
     setFriends(friends);
     setRequests(requests);
+    setLoading(false);
   }
 
   useEffect(() => {
     loadFriends();
-  }, [authData?._id]);
+  }, []);
 
   return (
     <Layout
@@ -96,6 +99,12 @@ export function FriendsPage({ navigation }: { navigation: any }) {
       navigation={navigation}
       hasNavbar={true}
       scrollable={true}
+      refreshControl={
+        <RefreshControl
+            refreshing={loading}
+            onRefresh={loadFriends}
+        />
+    }
     >
       <View>
         <PageHeader title={"Amigos"} />

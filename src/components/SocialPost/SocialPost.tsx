@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { TextInput, View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Button } from '../Button/Button';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { createPost } from '../../services/PostService';
 
-const SocialPostInput = () => {
-  const [image, setImage] = useState(null);
+const SocialPostInput = ({reload}: {reload: () => void}) => {
+  const [image, setImage] = useState('');
   const [text, setText] = useState('');
 
   // Função para abrir o seletor de imagens
@@ -21,6 +22,17 @@ const SocialPostInput = () => {
       setImage(result.assets[0].uri);
     }
   };
+
+  async function create(){
+    if (!text || !image) {
+      Alert.alert('Erro', 'Você precisa escrever algo e adicionar uma imagem para postar')
+      return
+    }
+    await createPost(text, image)
+    reload()
+    setText('')
+    setImage('')
+  }
 
   return (
     <View style={styles.container}>
@@ -41,7 +53,7 @@ const SocialPostInput = () => {
             </TouchableOpacity>
         }
         <View style={{flex: 1, marginLeft: 20}}>
-            <Button type={"primary"} label={"Postar"} callback={()=>{/**/}}/>
+            <Button type={"primary"} label={"Postar"} callback={create}/>
         </View>
       </View>
     </View>

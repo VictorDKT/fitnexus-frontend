@@ -6,7 +6,6 @@ import AppLoading from "expo-app-loading";
 import { Text, StyleSheet, SafeAreaView } from 'react-native';
 import { AuthProvider } from './src/context/Auth';
 import { useFonts } from 'expo-font';
-import { ProfileProvider } from './src/context/ProfileContext';
 
 export default function App() {
   moment.locale("pt-br")
@@ -25,13 +24,11 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <ProfileProvider>
-        <SafeAreaView style={styles.safeArea}>
-          <Text></Text>
-          <AppStack />
-          <StatusBar style="auto" />
-        </SafeAreaView>
-      </ProfileProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <Text></Text>
+        <AppStack />
+        <StatusBar style="auto" />
+      </SafeAreaView>
     </AuthProvider>
   );
 }
