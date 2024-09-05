@@ -77,15 +77,6 @@ export function SearchFriendsPage({ navigation }: { navigation: any }) {
                 callback={(name) => setNameSearch(name as string)}
               />
             </View>
-            <View>
-              <Button
-                label={"Buscar"}
-                type={"search"}
-                callback={() => {
-                  //
-                }}
-              />
-            </View>
           </View>
           <View>
             {suggestions.map((profile, index) => (
