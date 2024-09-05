@@ -4,14 +4,100 @@ import styles from './MissionsPageStyles';
 import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { Button } from "../../components/Button/Button";
+import { useEffect, useState } from "react";
+import { Challenge } from "../../services/types";
+import { getMyChallenges, getPendingChallenges, rejectChallenge } from "../../services/ChallengeService";
+import { RefreshControl } from "react-native-gesture-handler";
+
+function ChallengeComponent({ challenge }: { challenge: Challenge }) {
+    return (
+        <View style={styles.challengeContainer}>
+        <Text style={styles.progressLabel}>Desafio com João</Text>
+        <View style={styles.challengeProgressContainer}>
+            <View style={styles.challengeProgressBarContainer}><ProgressBar progress={50} /></View>
+            <Text style={styles.progressLabel}>50%</Text>
+        </View>
+    </View>
+    )
+}
+
+function SolicitationComponent({ challenge, reload }: { challenge: Challenge, reload: () => void }) {
+    const dateFormatted = new Date(challenge.start_date).toLocaleDateString("pt-BR")
+    async function reject(){
+        await rejectChallenge(challenge.id)
+        await reload()
+    }
+    async function accept(){
+        await rejectChallenge(challenge.id)
+        await reload()
+    }
+    return (
+        <View style={styles.solicitation}>
+        <View style={styles.postHeader}>
+            <Image
+                source={{uri: challenge.requester.image}}
+                style={styles.postUserImage}
+            />
+            <View>
+                <Text style={styles.postUserName}>{challenge.requester.name}</Text>
+            </View>
+        </View>
+        <View>
+            <Text style={styles.progressLabel}>Início: {dateFormatted}</Text>
+            <Text style={styles.progressLabel}>Duração: {challenge.weeks_duration} semanas</Text>
+            <View style={styles.solicitationFooter}>
+                <View style={styles.solicitationFooterButtonContainer1}>
+                    <Button
+                        type={"primary"}
+                        label={"Aceitar"}
+                        callback={accept}
+                    />
+                </View>
+                <View style={styles.solicitationFooterButtonContainer2}>
+                    <Button
+                        type={"secondary"}
+                        label={"Recusar"}
+                        callback={reject}
+                    />
+                </View>
+            </View>
+        </View>
+    </View>
+    )
+}
 
 export function MissionsPage({ navigation }: { navigation: any }) {
+    const [loading, setLoading] = useState(false);
+    const [challenges, setChallenges] = useState<Challenge[]>([])
+    const [pending, setPending] = useState<Challenge[]>([])
+
+    async function loadAll() {
+        setLoading(true)
+        const [challenges, pending] = await Promise.all([
+            getMyChallenges(),
+            getPendingChallenges()
+        ])
+        setChallenges(challenges)
+        setPending(pending)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        loadAll()
+    }, [])
+
     return (
         <Layout
             page='missions'
             navigation={navigation}
             hasNavbar={true}
             scrollable={true}
+            refreshControl={
+                <RefreshControl
+                    refreshing={loading}
+                    onRefresh={loadAll}
+                />
+            }
         >
             <View>
                 <PageHeader 
@@ -21,92 +107,14 @@ export function MissionsPage({ navigation }: { navigation: any }) {
                     }}
                 />
                 <Text style={styles.homeItemTitle}>Meus desafios</Text>
-                <View style={styles.challengeContainer}>
-                    <Text style={styles.progressLabel}>Desafio com João</Text>
-                    <View style={styles.challengeProgressContainer}>
-                        <View style={styles.challengeProgressBarContainer}><ProgressBar progress={50} /></View>
-                        <Text style={styles.progressLabel}>50%</Text>
-                    </View>
-                </View>
-                <View style={styles.challengeContainer}>
-                    <Text style={styles.progressLabel}>Desafio com Lucas</Text>
-                    <View style={styles.challengeProgressContainer}>
-                        <View style={styles.challengeProgressBarContainer}><ProgressBar progress={75} /></View>
-                        <Text style={styles.progressLabel}>75%</Text>
-                    </View>
-                </View>
+                    {challenges.map((challenge, index) => (
+                        <ChallengeComponent key={index} challenge={challenge} />
+                    ))}
                 <Text style={styles.homeItemTitle}>Pendentes</Text>
                 <View style={styles.solicitationsContainer}>
-                    <View style={styles.solicitation}>
-                        <View style={styles.postHeader}>
-                            <Image
-                                source={require("./mock/profile.png")}
-                                style={styles.postUserImage}
-                            />
-                            <View>
-                                <Text style={styles.postUserName}>Julia</Text>
-                            </View>
-                        </View>
-                        <View>
-                            <Text style={styles.progressLabel}>Início: 10/09/2024</Text>
-                            <Text style={styles.progressLabel}>Duração: 4 semanas</Text>
-                            <View style={styles.solicitationFooter}>
-                                <View style={styles.solicitationFooterButtonContainer1}>
-                                    <Button
-                                        type={"primary"}
-                                        label={"Aceitar"}
-                                        callback={()=>{
-                                            //
-                                        }}
-                                    />
-                                </View>
-                                <View style={styles.solicitationFooterButtonContainer2}>
-                                    <Button
-                                        type={"secondary"}
-                                        label={"Recusar"}
-                                        callback={()=>{
-                                            //
-                                        }}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.solicitation}>
-                        <View style={styles.postHeader}>
-                            <Image
-                                source={require("./mock/profile.png")}
-                                style={styles.postUserImage}
-                            />
-                            <View>
-                                <Text style={styles.postUserName}>Julia</Text>
-                            </View>
-                        </View>
-                        <View>
-                            <Text style={styles.progressLabel}>Início: 10/09/2024</Text>
-                            <Text style={styles.progressLabel}>Duração: 4 semanas</Text>
-                            <View style={styles.solicitationFooter}>
-                                <View style={styles.solicitationFooterButtonContainer1}>
-                                    <Button
-                                        type={"primary"}
-                                        label={"Aceitar"}
-                                        callback={()=>{
-                                            //
-                                        }}
-                                    />
-                                </View>
-                                <View style={styles.solicitationFooterButtonContainer2}>
-                                    <Button
-                                        type={"secondary"}
-                                        label={"Recusar"}
-                                        callback={()=>{
-                                            //
-                                        }}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                   {pending.map((challenge, index) => (
+                        <SolicitationComponent key={index} challenge={challenge} reload={loadAll} />
+                   ))}
                 </View>
             </View>
         </Layout>

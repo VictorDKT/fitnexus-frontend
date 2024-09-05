@@ -50,3 +50,12 @@ export type Exercise = {
     description: string,
     image: string,
 }
+
+export type Challenge = {
+    id: string,
+    workouts_goal: number,
+    weeks_duration: number,
+    start_date: string,
+    requester: Profile, 
+    requested: Profile,
+}
