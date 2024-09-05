@@ -19,6 +19,7 @@ export type Profile = {
     friendsRequests: Profile[],
     training_dates: Date[],
     conquests: Conquest[],
+    solicitated?: boolean,
 }
 
 export type Conquest = {

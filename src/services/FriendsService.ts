@@ -1,5 +1,5 @@
-import { Profile } from "../context/ProfileContext";
 import api from "./api";
+import { Profile } from "./types";
 
 export async function getMyFriends(): Promise<Profile[]> {
   const response = await api.get(`/user/friends`);
@@ -17,4 +17,13 @@ export async function acceptFriend(id: string) {
 
 export async function refuseFriend(id: string) {
   return await api.post(`/user/friends/reject/${id}`);
+}
+
+export async function requestFriend(id: string) {
+  return await api.post(`/user/friends/request/${id}`);
+}
+
+export async function getFriendSuggestions(name: string){
+  const response = await api.get(`/user/friends/suggestions`, {params: {name}});
+  return response.data.data;
 }
