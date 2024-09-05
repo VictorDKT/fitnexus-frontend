@@ -6,6 +6,27 @@ import { useEffect, useState } from "react";
 import { Button } from "../../components/Button/Button";
 import { Training, TrainingExercise } from "../../services/types";
 import { finishTraining } from "../../services/TrainingService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const saveExerciseData = async (serie: number, exercicios: Record<string, unknown>[], currentExercicieIndex: number, id: string) => {
+    try {
+      const date = new Date().toISOString();
+      const exerciseData = {
+        exercicios: exercicios,
+        currentExercicieIndex: currentExercicieIndex,
+        serie: serie,
+        date: date,
+        id: id,
+      };
+  
+
+      const jsonValue = JSON.stringify(exerciseData);
+ 
+      await AsyncStorage.setItem('@exercise_data', jsonValue);
+    } catch (e) {
+      console.error('Erro ao salvar os dados no AsyncStorage', e);
+    }
+  };
 
 export function ExercicioPage({ navigation, route: { params: { training },},  }: { navigation: any, route: { params: { training: Training } } }) {
     const screenWidth = Dimensions.get('window').width;
@@ -15,6 +36,31 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
     const [currentExercicieIndex, setCurrentExecicieIndex] = useState(0);
     const [exercicios, setExercicios] = useState<TrainingExercise[]>([]);
     const currentExercise: TrainingExercise = exercicios[currentExercicieIndex];
+    const [currentSerie, setCurrentSerie] = useState(0);
+
+    useEffect(() => {
+        (
+            async () => {
+                try {
+                  const jsonValue = await AsyncStorage.getItem('@exercise_data');
+                  
+                  if (jsonValue !== null) {
+                    const exerciseData = JSON.parse(jsonValue);
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    const storedDate = new Date(exerciseData.date).toISOString().split('T')[0];
+                    
+                    if (storedDate === currentDate && exerciseData.id === training?.id) {
+                        setExercicios(exerciseData.exercicios);
+                        setCurrentSerie(exerciseData.serie);
+                        setCurrentExecicieIndex(exerciseData.currentExercicieIndex);
+                    }
+                  }
+                } catch (e) {
+                  console.error('Erro ao buscar os dados do AsyncStorage', e);
+                }
+            }
+        )()
+      }, []);
 
     useEffect(()=>{
         let interval = null;
@@ -29,15 +75,38 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
     }, [timerRunning, timer])
 
     useEffect(() => {
-        // deep copy of array
-        setExercicios(JSON.parse(JSON.stringify(training.exercises)));
-        setCurrentExecicieIndex(0);
-    }, [training?.id])
+        if(training) {
+            (
+                async ()=> {
+                    const jsonValue = await AsyncStorage.getItem('@exercise_data');
+                            
+                    if (jsonValue !== null) {
+                        const exerciseData = JSON.parse(jsonValue);
+                        const currentDate = new Date().toISOString().split('T')[0];
+                        const storedDate = new Date(exerciseData.date).toISOString().split('T')[0];
+                
+                        if (storedDate !== currentDate || exerciseData.id !== training.id) {
+                            saveExerciseData(currentSerie, exercicios, currentExercicieIndex, training.id);
+                            setExercicios(JSON.parse(JSON.stringify(training.exercises)));
+                            setCurrentExecicieIndex(0);
+                            setCurrentSerie(0);
+                        }
+                    } else {
+                        saveExerciseData(currentSerie, exercicios, currentExercicieIndex, training?.id);
+                        setExercicios(JSON.parse(JSON.stringify(training.exercises)));
+                        setCurrentExecicieIndex(0);
+                        setCurrentSerie(0);
+                    }
+                }
+            )()
+        }
+    }, [training])
 
     async function finish(){
         await finishTraining()
         Alert.alert("Parabéns!", "Exercícios do dia finalizados.", [{
-            text: "Entendi", onPress: ()=>{
+            text: "Entendi", onPress: async ()=>{
+                await AsyncStorage.removeItem('@exercise_data');
                 navigation.navigate("HomePage")
             }
         }]);
@@ -55,7 +124,7 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                     goBackFunction={()=>{
                         setTimer(0);
                         setTimerRunning(false);
-                        navigation.navigate("TreinoPage");
+                        navigation.navigate("TreinoPage", { training });
                     }}
                 />
                 <Image
@@ -65,7 +134,8 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                 <View style={{padding: 20, flex: 1, height: "100%"}}>
                     <View style={styles.exercicieContentBox}>
                         <Text style={styles.exercicieTitle}>{currentExercise?.exercise?.name}</Text>
-                        <Text style={styles.exercicieDescription}>{currentExercise?.exercise?.description}</Text>
+                        <Text style={styles.exercicieDescription}>Carga: {currentExercise?.load}</Text>
+                        <Text style={styles.exercicieDescription}>Series: {currentSerie}/{currentExercise?.series}</Text>
                     </View>
                     <View style={styles.exercicieFooter}>
                         <View style={styles.exercicieFooterButtonBox1}>
@@ -77,6 +147,8 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                                         const newExercicies = exercicios.filter((exercicie, index)=>index !== currentExercicieIndex);
                                         newExercicies.push(currentExercise);
                                         setExercicios(newExercicies);
+                                        setCurrentSerie(0);
+                                        saveExerciseData(currentSerie, exercicios, currentExercicieIndex, training?.id);
                                     }
                                 }}
                             />
@@ -84,18 +156,25 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                         <View style={styles.exercicieFooterButtonBox2}>
                             <Button
                                 type="primary"
-                                label={timerRunning ? "Finalizar" : "Começar"}
+                                label={timerRunning && currentSerie === currentExercise.series ? "Finalizar" : timerRunning ? "Finalizar série" : "Começar série"}
                                 callback={()=>{
-                                    if(timerRunning) {
+                                    if(timerRunning && currentSerie === currentExercise.series) {
                                         if(currentExercicieIndex + 1 === exercicios.length) {
                                            finish()
                                         } else {
                                             setTimer(0);
                                             setTimerRunning(false);
                                             setCurrentExecicieIndex(currentExercicieIndex+1);
+                                            setCurrentSerie(0);
+                                            saveExerciseData(currentSerie, exercicios, currentExercicieIndex, training?.id);
                                         }
+                                    } if(timerRunning) {
+                                        setTimer(0);
+                                        setTimerRunning(false);
+                                        saveExerciseData(currentSerie, exercicios, currentExercicieIndex, training?.id);
                                     } else {
                                         setTimerRunning(true);
+                                        setCurrentSerie(currentSerie+1);
                                     }
                                 }}
                             />

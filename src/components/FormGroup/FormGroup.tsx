@@ -5,6 +5,7 @@ import PhoneInput from "react-native-phone-number-input";
 import { useEffect, useState } from "react";
 import MultiSelect from 'react-native-multiple-select';
 import MaskInput from 'react-native-mask-input';
+import { ImageInput } from "../ImageInput/ImageInput";
 
 interface IFormGroupProps {
     placeholder: string,
@@ -29,6 +30,12 @@ function renderInput(props: IFormGroupProps) {
     switch(props.type) {
         case "text":
             input = renderTextInput(props);
+            break;
+        case "number":
+            input = renderTextInput(props);
+            break;
+        case "image":
+            input = renderImageInput(props);
             break;
         case "password":
             input = renderTextInput(props);
@@ -56,13 +63,27 @@ function renderTextInput(props: IFormGroupProps) {
             {props.label && <Text style={styles.label}>{props.label}</Text>}
             <TextInput
                 placeholder={props.placeholder}
+                keyboardType={props.type === "number" ? "numeric" : "default"}
                 style={styles.input}
                 secureTextEntry={props.type === "password"}
+                placeholderTextColor={"#B8B8B8"}
                 autoCapitalize='none'
                 defaultValue={props.defaultValue}
                 onChangeText={(value)=>{
                     props.callback(value);
                 }}
+            />
+            <Text style={styles.error}>{props.errorMessage}</Text>
+        </View>
+    )
+}
+
+function renderImageInput(props: IFormGroupProps) {
+    return (
+        <View style={styles.inputView}>
+            {props.label && <Text style={styles.label}>{props.label}</Text>}
+            <ImageInput
+                callback={props.callback}
             />
             <Text style={styles.error}>{props.errorMessage}</Text>
         </View>
@@ -175,7 +196,9 @@ export function RenderDateInput(props: IFormGroupProps) {
 
     return (
         <View style={styles.inputView}>
+        {props.label && <Text style={styles.label}>{props.label}</Text>}
         <MaskInput
+            placeholderTextColor={"#B8B8B8"}
             style={styles.input}
             value={date}
             defaultValue={props.defaultValue}

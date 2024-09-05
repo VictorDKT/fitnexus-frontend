@@ -53,6 +53,7 @@ const AuthProvider = ({children}: {children: ReactNode}) => {
     setAuthData(undefined);
     api.defaults.headers.Authorization = '';
     await AsyncStorage.removeItem('@AuthData');
+    await AsyncStorage.removeItem('@exercise_data');
   };
 
   return (

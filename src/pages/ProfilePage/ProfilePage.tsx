@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { PostComponent } from "./Post";
 import { getProfile } from "../../services/ProfileService";
 import { Profile } from "../../services/types";
+import { CommonActions } from '@react-navigation/native';
 
 export function ProfilePage({ navigation }: { navigation: any }) {
     const {signOut, authData} = useAuth();

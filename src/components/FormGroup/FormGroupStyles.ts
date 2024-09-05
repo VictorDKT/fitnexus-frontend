@@ -15,6 +15,7 @@ export const styles = StyleSheet.create({
 
     label: {
         color: "white",
+        marginBottom: 5,
     },
 
     phoneInput: {

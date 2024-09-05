@@ -4,7 +4,7 @@ import { buttonStyles } from "./ButtonsStyles"
 interface IButtonProps {
     callback: ()=>void,
     label: string,
-    type: "primary" | "secondary" | "terciary" | "span" | "span-secondary",
+    type: "primary" | "secondary" | "terciary" | "span" | "span-secondary" | "search" | "search-span",
 }
 
 export function Button(props: IButtonProps) {
@@ -19,7 +19,7 @@ export function Button(props: IButtonProps) {
     )
 }
 
-const getButtonStyle = (type: "primary" | "secondary" | "terciary" | "span" | "span-secondary")=>{
+const getButtonStyle = (type: "primary" | "secondary" | "terciary" | "span" | "span-secondary" | "search" | "search-span")=>{
     let styles;
     switch(type) {
         case "primary":
@@ -50,6 +50,18 @@ const getButtonStyle = (type: "primary" | "secondary" | "terciary" | "span" | "s
             styles = {
                 label: buttonStyles.spanSecondaryButtonLabel,
                 button: buttonStyles.spanSecondaryButton
+            }
+            break;
+        case "search":
+            styles = {
+                label: buttonStyles.searchButtonLabel,
+                button: buttonStyles.searchButton
+            }
+            break;
+        case "search-span":
+            styles = {
+                label: buttonStyles.spanSearchButtonLabel,
+                button: buttonStyles.spanSearchButton,
             }
             break;
     }

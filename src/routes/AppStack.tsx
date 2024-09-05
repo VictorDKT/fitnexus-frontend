@@ -13,6 +13,9 @@ import { NotificationsPage } from "../pages/NotificationsPage/NotificationsPage"
 import { TreinoPage } from "../pages/TreinoPage/TreinoPage";
 import { ExercicioPage } from "../pages/ExercicioPage/ExercicioPage";
 import { ConquestsPage } from "../pages/ConquestsPage/ConquestsPage";
+import { RegisterPage } from "../pages/RegisterPage/RegisterPage";
+import { SearchFriendsPage } from "../pages/SearchFriendsPage/SearchFriendsPage";
+import { ChallengeFriendPage } from "../pages/ChallengeFriendPage/ChallengeFriendPage";
 
 const { Navigator, Screen } = createDrawerNavigator();
 
@@ -31,6 +34,9 @@ const publicRoutes: Route[] = [
     {name: "TreinoPage", component: TreinoPage},
     {name: "ExercicioPage", component: ExercicioPage},
     {name: "ConquestsPage", component: ConquestsPage},
+    {name: "RegisterPage", component: RegisterPage},
+    {name: "SearchFriendsPage", component: SearchFriendsPage},
+    {name: "ChallengeFriendPage", component: ChallengeFriendPage},
 ]
 
 const privateRoutes: Route[] = [
@@ -42,6 +48,9 @@ const privateRoutes: Route[] = [
     {name: "TreinoPage", component: TreinoPage},
     {name: "ExercicioPage", component: ExercicioPage},
     {name: "ConquestsPage", component: ConquestsPage},
+    {name: "RegisterPage", component: RegisterPage},
+    {name: "SearchFriendsPage", component: SearchFriendsPage},
+    {name: "ChallengeFriendPage", component: ChallengeFriendPage},
 ]
 
 function AppStack() {

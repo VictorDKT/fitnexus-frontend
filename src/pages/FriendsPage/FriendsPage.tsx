@@ -49,7 +49,7 @@ function FriendSolicitation({
   );
 }
 
-function FriendProfile({ profile }: { profile: Profile }) {
+function FriendProfile({ profile, navigation }: { profile: Profile, navigation: any }) {
   return (
     <View style={styles.solicitation}>
       <View style={styles.postHeader}>
@@ -64,7 +64,7 @@ function FriendProfile({ profile }: { profile: Profile }) {
             label="Desafiar"
             type="span"
             callback={() => {
-              //
+              navigation.navigate("ChallengeFriendPage")
             }}
           />
         </View>
@@ -104,10 +104,19 @@ export function FriendsPage({ navigation }: { navigation: any }) {
             refreshing={loading}
             onRefresh={loadFriends}
         />
-    }
+      }
     >
       <View>
         <PageHeader title={"Amigos"} />
+        <View style={{padding: 20}}>
+          <Button
+            label="Buscar amigos"
+            type="primary"
+            callback={()=>{
+              navigation.navigate("SearchFriendsPage");
+            }}
+          />
+        </View>
         <Text style={styles.homeItemTitle}>Solicitações</Text>
         <View style={styles.solicitationsContainer}>
           {requests.map((profile, index) => (
@@ -117,7 +126,7 @@ export function FriendsPage({ navigation }: { navigation: any }) {
         <Text style={styles.homeItemTitle}>Amigos</Text>
         <View style={styles.solicitationsContainer}>
           {friends.map((profile, index) => (
-            <FriendProfile key={index} profile={profile} />
+            <FriendProfile key={index} profile={profile} navigation={navigation} />
           ))}
         </View>
       </View>

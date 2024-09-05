@@ -103,7 +103,7 @@ export function LoginPage({navigation}: {navigation: any}) {
                         type={"secondary"}
                         label={"Primeiro acesso"}
                         callback={()=>{
-                            //
+                            navigation.navigate("RegisterPage")
                         }}
                     />
                 </View>
