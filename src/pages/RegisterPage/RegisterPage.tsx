@@ -5,10 +5,14 @@ import { FormGroup } from '../../components/FormGroup/FormGroup';
 import { Button } from '../../components/Button/Button';
 import { useState } from 'react';
 import { validateAllInputs, validateInput } from '../../Tools/validateInputs';
+import { registerRequest } from '../../services/AuthService';
+import { useAuth } from '../../context/Auth';
+import { AxiosError } from 'axios';
 
 export function RegisterPage({navigation}: {navigation: any}) {
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [validations, setValidations] = useState<Record<string, unknown>>({});
+    const {signIn} = useAuth();
 
     const validationCallback = (field: string, value: string | string[] | null)=>{
         const newValidations = {...validations};
@@ -23,6 +27,23 @@ export function RegisterPage({navigation}: {navigation: any}) {
         image: ["mandatory"],
         goal: ["mandatory"],
         workouts_per_week: ["mandatory"],
+        description: ["mandatory"]
+    }
+
+    async function registrar(){
+        try {
+            const data = await registerRequest(formData.name, formData.email, formData.password, formData.image, formData.goal, Number(formData.workouts_per_week), formData.description);
+            signIn({
+                _id: data.id,
+                name: data.name,
+                login: data.login,
+                role: data.role,
+                token: data.access_token
+            });
+            navigation.navigate("HomePage")
+        } catch (error) {
+            Alert.alert("OOPS!", "Ocorreu um erro ao tentar registrar, tente novamente mais tarde.")
+        }
     }
 
     return (
@@ -139,12 +160,12 @@ export function RegisterPage({navigation}: {navigation: any}) {
                 <View style={styles.buttonContainer}>
                     <Button
                         type={"primary"}
-                        label={"Registar"}
+                        label={"Registrar"}
                         callback={()=>{
                             const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                             if(validationResult.success) {
-                                navigation.navigate("HomePage")
+                                registrar()
                             } else {
                                 setValidations(validationResult.errors);
                                 Alert.alert("OOPS!", "Um ou mais campos não estão preenchidos corretamente.", [{
@@ -159,7 +180,7 @@ export function RegisterPage({navigation}: {navigation: any}) {
                         type={"secondary"}
                         label={"Voltar para o login"}
                         callback={()=>{
-                            //
+                            navigation.navigate("LoginPage")
                         }}
                     />
                 </View>
