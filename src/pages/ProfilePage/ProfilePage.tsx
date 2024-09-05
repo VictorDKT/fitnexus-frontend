@@ -45,7 +45,7 @@ export function ProfilePage({ navigation }: { navigation: any }) {
                 <PageHeader
                     title="Perfil"
                     logoutFunction={async ()=>{
-                        await signOut()
+                        await signOut(navigation)
                         navigation.navigate('LoginPage')
                     }}
                     editFunction={()=>{

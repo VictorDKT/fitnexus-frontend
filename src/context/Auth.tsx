@@ -1,6 +1,7 @@
 import React, {createContext, useState, useContext, useEffect, ReactNode} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 type AuthData = {
   _id: string,
@@ -14,11 +15,11 @@ type AuthContextData = {
   authData?: AuthData;
   loading: boolean;
   signIn(authData: AuthData): Promise<void>;
-  signOut(): void;
+  signOut(navigation: any): void;
 };
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
-let signOut = async () => {} // perdoe-me pai pela gambiarra
+let signOut = async (navigation: any) => {} // perdoe-me pai pela gambiarra
 
 const AuthProvider = ({children}: {children: ReactNode}) => {
   const [authData, setAuthData] = useState<AuthData>();
@@ -49,11 +50,30 @@ const AuthProvider = ({children}: {children: ReactNode}) => {
     setAuthData(authData);
   };
 
-  signOut = async () => {
+  signOut = async (navigation: any) => {
     setAuthData(undefined);
     api.defaults.headers.Authorization = '';
     await AsyncStorage.removeItem('@AuthData');
     await AsyncStorage.removeItem('@exercise_data');
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {name: "LoginPage"},
+          /*{name: "HomePage"},
+          {name: "MissionsPage"},
+          {name: "ProfilePage"},
+          {name: "FriendsPage"},
+          {name: "NotificationsPage"},
+          {name: "TreinoPage"},
+          {name: "ExercicioPage"},
+          {name: "ConquestsPage"},
+          {name: "RegisterPage"},
+          {name: "SearchFriendsPage"},
+          {name: "ChallengeFriendPage"},*/
+        ],
+      })
+  );
   };
 
   return (
