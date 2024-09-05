@@ -17,8 +17,15 @@ function ImageInput(props: {callback: (value: string)=>void}) {
         });
     
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            props.callback(result.assets[0].uri);
+            const base64 = await fetch(result.assets[0].uri)
+            .then((res) => res.blob())
+            .then((blob) => new Promise((resolve, _) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            }));
+            setImage(base64 as string);
+            props.callback(base64 as string);
         }
     };
 

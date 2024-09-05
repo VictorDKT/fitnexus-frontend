@@ -19,7 +19,15 @@ const SocialPostInput = ({reload}: {reload: () => void}) => {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      // get base64 from image
+      const base64 = await fetch(result.assets[0].uri)
+        .then((res) => res.blob())
+        .then((blob) => new Promise((resolve, _) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        }));
+        setImage(base64 as string);
     }
   };
 
