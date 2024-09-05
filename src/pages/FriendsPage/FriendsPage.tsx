@@ -64,7 +64,7 @@ function FriendProfile({ profile, navigation }: { profile: Profile, navigation: 
             label="Desafiar"
             type="span"
             callback={() => {
-              navigation.navigate("ChallengeFriendPage")
+              navigation.navigate("ChallengeFriendPage", {requested: profile})
             }}
           />
         </View>
