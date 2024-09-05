@@ -13,17 +13,20 @@ import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
 import { Button } from "../../components/Button/Button";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { SocialPostInput } from "../../components/SocialPost/SocialPost";
-import { Post, Profile, Training } from "../../services/types";
+import { Challenge, Post, Profile, Training } from "../../services/types";
 import { getFriendsPosts } from "../../services/PostService";
 import { useAuth } from "../../context/Auth";
 import { PostComponent } from "../ProfilePage/Post";
 import { getMyTrainings } from "../../services/TrainingService";
 import { getProfile } from "../../services/ProfileService";
+import { getMyChallenges } from "../../services/ChallengeService";
+import { ChallengeComponent } from "../MissionsPage/MissionsPage";
 
 export function HomePage({ navigation }: { navigation: any }) {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [trainings, setTrainings] = useState<Training[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [profile, setProfile] = useState<Profile>({} as Profile);
   const { authData } = useAuth();
 
@@ -42,10 +45,15 @@ export function HomePage({ navigation }: { navigation: any }) {
     setProfile(profile);
   }
 
-  function loadAll() {
-    loadPosts();
-    loadTrainings();
-    loadProfile()
+  async function loadChallenges() {
+     const challenges = await getMyChallenges();
+     setChallenges(challenges);
+  }
+
+  async function loadAll() {
+    setLoading(true);
+    await Promise.all([loadPosts(), loadTrainings(), loadProfile(), loadChallenges()]);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -97,15 +105,9 @@ export function HomePage({ navigation }: { navigation: any }) {
         </View>
         <View>
           <Text style={styles.homeItemTitle}>Meus desafios</Text>
-          <View style={styles.challengeContainer}>
-            <Text style={styles.progressLabel}>Desafio com João</Text>
-            <View style={styles.challengeProgressContainer}>
-              <View style={styles.challengeProgressBarContainer}>
-                <ProgressBar progress={50} />
-              </View>
-              <Text style={styles.progressLabel}>50%</Text>
-            </View>
-          </View>
+          {challenges.map((challenge, index) => (
+          <ChallengeComponent key={index} challenge={challenge} />
+        ))}
         </View>
         <View>
           <Text style={styles.homeItemTitle}>Meus Treinos</Text>

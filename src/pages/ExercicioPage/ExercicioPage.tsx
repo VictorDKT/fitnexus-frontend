@@ -103,7 +103,11 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
     }, [training])
 
     async function finish(){
-        await finishTraining()
+        try { 
+            await finishTraining()
+        } 
+        catch (error) {
+        }
         Alert.alert("Parabéns!", "Exercícios do dia finalizados.", [{
             text: "Entendi", onPress: async ()=>{
                 await AsyncStorage.removeItem('@exercise_data');

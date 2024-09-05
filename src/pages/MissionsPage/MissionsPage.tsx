@@ -15,7 +15,7 @@ import {
 import { RefreshControl } from "react-native-gesture-handler";
 import { useAuth } from "../../context/Auth";
 
-function ChallengeComponent({ challenge }: { challenge: Challenge }) {
+export function ChallengeComponent({ challenge }: { challenge: Challenge }) {
   const { authData } = useAuth();
   const amIRequester = challenge.requester.id === authData?._id;
   const userToShow = amIRequester ? challenge.requested : challenge.requester;
