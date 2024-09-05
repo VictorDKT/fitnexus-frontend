@@ -137,6 +137,7 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                         <Text style={styles.exercicieDescription}>Carga: {currentExercise?.load}</Text>
                         <Text style={styles.exercicieDescription}>Repetições: {currentExercise?.repetitions}</Text>
                         <Text style={styles.exercicieDescription}>Series: {currentSerie}/{currentExercise?.series}</Text>
+                        <Text style={styles.exercicieDescription}>{currentExercise?.exercise?.description}</Text>
                     </View>
                     <View style={styles.exercicieFooter}>
                         <View style={styles.exercicieFooterButtonBox1}>
