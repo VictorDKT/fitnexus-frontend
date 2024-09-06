@@ -4,7 +4,6 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { LoginPage } from "../pages/LoginPage/LoginPage";
 import { HomePage } from "../pages/HomePage/HomePage";
 import { useAuth } from "../context/Auth";
-import AppLoading from "expo-app-loading";
 import { navigationRef } from './RootNavigation';
 import { MissionsPage } from "../pages/MissionsPage/MissionsPage";
 import { ProfilePage } from "../pages/ProfilePage/ProfilePage";
@@ -55,10 +54,6 @@ const privateRoutes: Route[] = [
 
 function AppStack() {
     const {authData, loading} = useAuth();
-
-    if (loading) {
-        return <AppLoading/>
-    }
 
     return (
         <NavigationContainer ref={navigationRef}>

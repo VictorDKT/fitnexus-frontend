@@ -30,7 +30,7 @@ export function PostComponent({ post, reload, setLoading }: { post: Post, reload
         <View style={styles.postUserInfo}>
           <Text style={styles.postUserName}>{post.user.name}</Text>
           {/*TODO: integrar o tempo atrás*/}
-          <Text style={styles.postTime}>há 5 minutos</Text>
+          {/*<Text style={styles.postTime}>há 5 minutos</Text>*/}
         </View>
       </View>
       <View style={styles.postData}>

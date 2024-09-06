@@ -57,6 +57,7 @@ export function HomePage({ navigation }: { navigation: any }) {
   }
 
   useEffect(() => {
+    if (!authData?._id) return;
     loadAll();
   }, [authData?._id]);
 

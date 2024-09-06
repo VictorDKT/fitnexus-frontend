@@ -34,7 +34,7 @@ export function ConquestsPage({ navigation }: { navigation: any }) {
 
   useEffect(() => {
     loadConquests();
-  }, [authData?._id]);
+  }, []);
 
   return (
     <Layout
