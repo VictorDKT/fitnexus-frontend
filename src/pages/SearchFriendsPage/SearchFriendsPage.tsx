@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { Layout } from "../../components/Layout/Layout";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import styles from "./SearchFriendsPageStyles";
@@ -10,10 +10,15 @@ import { getFriendSuggestions, requestFriend } from "../../services/FriendsServi
 import { RefreshControl } from "react-native-gesture-handler";
 import { useAuth } from "../../context/Auth";
 
-function SuggestionComponent({ profile, reload }: { profile: Profile, reload : ()=>void }) {
+function SuggestionComponent({ profile, reload, navigation }: { profile: Profile, reload : ()=>void, navigation: any }) {
   const { authData } = useAuth();
   return (
-    <View style={styles.itemBox}>
+    <TouchableOpacity 
+      style={styles.itemBox}
+      onPress={() => {
+        navigation.navigate("ProfilePage", {id: profile.id, search: true})
+      }}
+    >
       <View style={styles.userBox}>
         <View style={styles.userData}>
           <Image style={styles.userImage} source={{ uri: profile.image }} />
@@ -32,7 +37,7 @@ function SuggestionComponent({ profile, reload }: { profile: Profile, reload : (
           />
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -80,7 +85,7 @@ export function SearchFriendsPage({ navigation }: { navigation: any }) {
           </View>
           <View>
             {suggestions.map((profile, index) => (
-              <SuggestionComponent key={index} profile={profile} reload={loadSuggestions} />
+              <SuggestionComponent key={index} profile={profile} reload={loadSuggestions} navigation={navigation} />
             ))}
           </View>
         </View>

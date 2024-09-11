@@ -4,6 +4,7 @@ import { useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/FontAwesome5';
+import { useAuth } from "../../context/Auth";
 
 interface ILayoutProps {
     page: string,
@@ -20,6 +21,7 @@ export let closeLoader: ()=>void;
 export function Layout(props: ILayoutProps) {
     const [loading, setLoading] = useState(false);
     const { height: screenHeight } = Dimensions.get('window');
+    const {authData} = useAuth();
 
     openLoader = ()=>{setLoading(true)}
     closeLoader = ()=>{setLoading(false)}
@@ -73,7 +75,7 @@ export function Layout(props: ILayoutProps) {
                 <TouchableOpacity 
                     style={props.page === "profile" ? styles.navItemActive : styles.navItem}
                     onPress={()=>{
-                        props.navigation.navigate("ProfilePage")
+                        props.navigation.navigate("ProfilePage", {id: authData?._id })
                     }}
                 >
                     <Icon3 size={20} name="user"  style={props.page === "profile" ? styles.navIconActive : styles.navIcon} />

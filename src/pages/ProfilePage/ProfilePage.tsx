@@ -10,29 +10,40 @@ import { useEffect, useState } from "react";
 import { PostComponent } from "./Post";
 import { getProfile } from "../../services/ProfileService";
 import { Profile } from "../../services/types";
-import { CommonActions } from '@react-navigation/native';
 
-export function ProfilePage({ navigation }: { navigation: any }) {
+export function ProfilePage({ 
+    navigation,
+    route: {
+        params: { id, search },
+    },
+}: {
+    navigation: any;
+    route: { params: { id: string, search: boolean } };
+}) {
+    const [isEdit, setIsEdit] = useState(false);
     const {signOut, authData} = useAuth();
     const [profile, setProfile] = useState<Profile>({} as Profile);
     const [loading, setLoading] = useState(false);
 
     async function loadProfile(){
         setLoading(true);
-        const profile = await getProfile(authData?._id || '')
+        const profile = await getProfile(id || '');
+        if(authData) {
+            setIsEdit(authData?._id === id);
+        }
         setProfile(profile);
         setLoading(false);
     }
 
     useEffect(() => {
         loadProfile()
-    }, [])
+    }, [id])
 
     return (
         <Layout
             page='profile'
             navigation={navigation}
-            hasNavbar={true}
+            hasNavbar={isEdit ? true : false}
             scrollable={true}
             refreshControl={
                 <RefreshControl
@@ -44,13 +55,16 @@ export function ProfilePage({ navigation }: { navigation: any }) {
             <View>
                 <PageHeader
                     title="Perfil"
-                    logoutFunction={async ()=>{
+                    logoutFunction={isEdit ? async ()=>{
                         await signOut(navigation)
                         navigation.navigate('LoginPage')
+                    } : undefined}
+                    goBackFunction={isEdit ? undefined : ()=>{
+                        navigation.navigate(search ? 'SearchFriendsPage' : 'FriendsPage')
                     }}
-                    editFunction={()=>{
+                    editFunction={isEdit ? ()=>{
                         //
-                    }}
+                    } : undefined}
                 />
                 <View>
                     <View style={styles.profileBox}>
@@ -93,7 +107,9 @@ export function ProfilePage({ navigation }: { navigation: any }) {
                     </View>
                     <View style={styles.postBox}>
                         <Text style={styles.postTitle}>Publicações</Text>
-                        <SocialPostInput reload={loadProfile}/>
+                        {isEdit &&
+                            <SocialPostInput reload={loadProfile}/>
+                        }
                         {profile.posts?.map((post, index) => {
                             return <PostComponent key={index} post={post} reload={loadProfile} setLoading={setLoading}/>
                         })}

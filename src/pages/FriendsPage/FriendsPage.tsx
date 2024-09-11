@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { Layout } from "../../components/Layout/Layout";
 import styles from "./FriendsPageStyles";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
@@ -51,12 +51,17 @@ function FriendSolicitation({
 
 function FriendProfile({ profile, navigation }: { profile: Profile, navigation: any }) {
   return (
-    <View style={styles.solicitation}>
+    <TouchableOpacity 
+      style={styles.solicitation}
+      onPress={() => {
+        navigation.navigate("ProfilePage", {id: profile.id})
+      }}
+    >
       <View style={styles.postHeader}>
         <View style={{ flex: 1, flexDirection: "row" }}>
           <Image source={{ uri: profile.image }} style={styles.postUserImage} />
           <View>
-            <Text style={styles.postUserName}>{profile.name}</Text>
+            <Text style={styles.postUserName}>{profile.name.trim()}</Text>
           </View>
         </View>
         <View style={styles.spanButtonContainer}>
@@ -69,7 +74,7 @@ function FriendProfile({ profile, navigation }: { profile: Profile, navigation: 
           />
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
