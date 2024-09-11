@@ -37,7 +37,10 @@ export function PostComponent({ post, reload, setLoading }: { post: Post, reload
         <Text style={styles.postText}>
             {post.content}
         </Text>
-        <Icon name="heart" style={isLiked ? styles.postLiked : styles.postLike} onPress={like} />
+        <View style={{flexShrink: 1, flexDirection: "row", alignItems: "center", height: 30, width: 45}}>
+          <Text style={styles.postText}>{post.likes.length}</Text>
+          <Icon name="heart" style={isLiked ? styles.postLiked : styles.postLike} onPress={like} />
+        </View>
       </View>
     </ImageBackground>
   );

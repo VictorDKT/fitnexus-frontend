@@ -7,13 +7,14 @@ const styles = StyleSheet.create({
     },
 
     exercicieTitle: {
-        fontFamily: "Lexend-Regular",
+        fontFamily: "Lexend-Bold",
         color: "white",
         fontSize: 30,
+        marginBottom: 10,
     },
 
     exercicieDescription: {
-        fontSize: 20,
+        fontSize: 15,
         color: "white",
     },
 
@@ -31,6 +32,36 @@ const styles = StyleSheet.create({
     exercicieFooterButtonBox2: {
         paddingLeft: 10,
         width: "50%",
+    },
+
+    progressContainer: {
+        padding: 20,
+        backgroundColor: "#202020",
+        width: "100%"
+    },
+
+    progressTitle: {
+        color: "white",
+        fontFamily: "Lexend-Bold",
+        fontSize: 15,
+    },
+
+    progressBody: {
+        flexShrink: 1,
+        flexDirection: "row",
+        paddingTop: 10,
+        alignItems: "center"
+    },
+
+    progressBarContainer: {
+        flex: 1,
+    },
+
+    progressLabel: {
+        fontFamily: "Lexend-Regular",
+        color: "white",
+        marginLeft: 10,
+        marginTop: -2,
     },
 });
 

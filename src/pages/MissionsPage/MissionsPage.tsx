@@ -15,14 +15,35 @@ import {
 import { RefreshControl } from "react-native-gesture-handler";
 import { useAuth } from "../../context/Auth";
 
+function calcularDias(startDate: Date, semanas: number) {
+  // Cria uma cópia da data de início para não alterar o original
+  const dataFinal = new Date(startDate);
+  
+  // Adiciona o número de semanas à data final (7 dias por semana)
+  dataFinal.setDate(dataFinal.getDate() + (semanas * 7));
+  
+  // Obtém a data atual
+  const dataAtual = new Date();
+  
+  // Calcula a diferença em milissegundos entre as duas datas
+  const diferencaEmMilissegundos = dataFinal - dataAtual;
+  
+  // Converte a diferença de milissegundos para dias
+  const diasRestantes = Math.ceil(diferencaEmMilissegundos / (1000 * 60 * 60 * 24));
+  
+  // Retorna a mensagem apropriada
+  return diasRestantes > 0 ? `${diasRestantes} dias` : "Finalizado";
+}
+
 export function ChallengeComponent({ challenge }: { challenge: Challenge }) {
   const { authData } = useAuth();
   const amIRequester = challenge.requester.id === authData?._id;
   const userToShow = amIRequester ? challenge.requested : challenge.requester;
-
+ 
   return (
     <View style={styles.challengeContainer}>
       <Text style={styles.progressLabel}>Desafio com {userToShow.name}</Text>
+      <Text style={styles.progressLabel}>Tempo restante: {calcularDias(challenge.start_date, challenge.weeks_duration)}</Text>
       <View style={styles.challengeProgressContainer}>
         <View style={styles.challengeProgressBarContainer}>
           <ProgressBar progress={50} />

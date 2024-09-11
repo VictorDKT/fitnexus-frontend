@@ -7,6 +7,7 @@ import { Button } from "../../components/Button/Button";
 import { Training, TrainingExercise } from "../../services/types";
 import { finishTraining } from "../../services/TrainingService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
 
 const saveExerciseData = async (serie: number, exercicios: Record<string, unknown>[], currentExercicieIndex: number, id: string) => {
     try {
@@ -37,6 +38,26 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
     const [exercicios, setExercicios] = useState<TrainingExercise[]>([]);
     const currentExercise: TrainingExercise = exercicios[currentExercicieIndex];
     const [currentSerie, setCurrentSerie] = useState(0);
+    const [progress, setProgress] = useState(0);
+
+    useEffect(()=>{
+        if(exercicios) {
+            let total = 0;
+            let feito = 0;
+
+            exercicios.forEach((exercicio, index)=>{
+                if(index < currentExercicieIndex) {
+                    feito = feito + exercicio.series;
+                }
+                if(index === currentExercicieIndex) {
+                    feito = feito + currentSerie;
+                }
+                total = total + exercicio.series;
+            });
+
+            setProgress(parseFloat((feito/total*100).toFixed(2)));
+        }
+    }, [currentExercicieIndex, exercicios, currentSerie])
 
     useEffect(() => {
         (
@@ -135,7 +156,14 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                     style={{ width: screenWidth, height: imageHeight }}
                     source={{uri: currentExercise?.exercise?.image}}
                 />
-                <View style={{padding: 20, flex: 1, height: "100%"}}>
+                <View style={styles.progressContainer}>
+                    <Text style={styles.progressTitle}>Progresso do treino:</Text>
+                    <View  style={styles.progressBody}>
+                        <View style={styles.progressBarContainer}><ProgressBar progress={progress}/></View>
+                        <Text style={styles.progressLabel}>{progress}%</Text>
+                    </View>
+                </View>
+                <View style={{padding: 20, paddingTop: 5, flex: 1, height: "100%"}}>
                     <View style={styles.exercicieContentBox}>
                         <Text style={styles.exercicieTitle}>{currentExercise?.exercise?.name}</Text>
                         <Text style={styles.exercicieDescription}>Carga: {currentExercise?.load} KG</Text>
