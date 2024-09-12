@@ -58,4 +58,5 @@ export type Challenge = {
     start_date: string,
     requester: Profile, 
     requested: Profile,
+    progress: number,
 }

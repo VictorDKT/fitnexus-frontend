@@ -46,7 +46,7 @@ export function ChallengeComponent({ challenge }: { challenge: Challenge }) {
       <Text style={styles.progressLabel}>Tempo restante: {calcularDias(challenge.start_date, challenge.weeks_duration)}</Text>
       <View style={styles.challengeProgressContainer}>
         <View style={styles.challengeProgressBarContainer}>
-          <ProgressBar progress={50} />
+          <ProgressBar progress={challenge.progress ? challenge.progress : 0} />
         </View>
         <Text style={styles.progressLabel}>50%</Text>
       </View>
