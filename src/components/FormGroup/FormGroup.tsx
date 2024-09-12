@@ -68,7 +68,7 @@ function renderTextInput(props: IFormGroupProps) {
                 secureTextEntry={props.type === "password"}
                 placeholderTextColor={"#B8B8B8"}
                 autoCapitalize='none'
-                defaultValue={props.defaultValue}
+                defaultValue={props.defaultValue?.toString()}
                 onChangeText={(value)=>{
                     props.callback(value);
                 }}
@@ -84,6 +84,7 @@ function renderImageInput(props: IFormGroupProps) {
             {props.label && <Text style={styles.label}>{props.label}</Text>}
             <ImageInput
                 callback={props.callback}
+                defaultValue={props.defaultValue}
             />
             <Text style={styles.error}>{props.errorMessage}</Text>
         </View>

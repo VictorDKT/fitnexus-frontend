@@ -63,7 +63,7 @@ export function ProfilePage({
                         navigation.navigate(search ? 'SearchFriendsPage' : 'FriendsPage')
                     }}
                     editFunction={isEdit ? ()=>{
-                        //
+                        navigation.navigate("RegisterPage", {id: authData?._id })
                     } : undefined}
                 />
                 <View>

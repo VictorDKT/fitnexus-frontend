@@ -9,3 +9,8 @@ export async function  registerRequest(name: string, login: string, password: st
     const response = await api.post('/auth/register', {name, login, password, image, goal, workouts_per_week, description});
     return response.data
 }
+
+export async function  editUserRequest(id: string, name: string, login: string, image: string, goal: string, workouts_per_week: number, description: string){
+    const response = await api.post(`/auth/register/${id}`, {name, login, image, goal, workouts_per_week, description});
+    return response.data
+}

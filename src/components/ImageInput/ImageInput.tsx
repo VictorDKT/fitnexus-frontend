@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, View } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from './ImageInputStyles'
 
-function ImageInput(props: {callback: (value: string)=>void}) {
+function ImageInput(props: {
+    callback: (value: string)=>void,
+    defaultValue?: string,
+}) {
     const [image, setImage] = useState('');
+
+    useEffect(()=>{
+        if(props.defaultValue) {
+            setImage(props.defaultValue);
+        }
+    }, [props.defaultValue])
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
