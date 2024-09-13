@@ -54,8 +54,9 @@ export function LoginPage({navigation}: {navigation: any}) {
             scrollable={false}
         >
             <View style={styles.loginContainer}>
-                <Text style={styles.titlePage}>Seja bem vindo!</Text>
-                <View style={styles.inputContainer}>
+            <Text style={styles.titlePage2}>FitNexus</Text>
+            <Text style={styles.titlePage}>Seja bem vindo!</Text>
+            <View style={styles.inputContainer}>
                     <FormGroup
                         type={"text"}
                         placeholder='Email'
@@ -83,7 +84,7 @@ export function LoginPage({navigation}: {navigation: any}) {
                         }}
                     />
                 </View>
-                <Text style={styles.forgotPasswordSpan}>Esqueceu sua senha?</Text>
+            
                 <View style={styles.buttonContainer}>
                     <Button
                         type={"primary"}

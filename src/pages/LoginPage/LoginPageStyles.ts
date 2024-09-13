@@ -22,6 +22,13 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
 
+    titlePage2: {
+        fontFamily: "SpaceGrotesk-Bold",
+        color: "#E71D27",
+        fontSize: 50,
+        marginBottom: 5,
+    },
+
     inputContainer: {
         width: "100%",
         marginBottom: 0,
