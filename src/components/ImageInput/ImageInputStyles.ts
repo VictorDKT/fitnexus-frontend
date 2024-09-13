@@ -15,6 +15,12 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
 
+    imageLand: {
+        width: 200,
+        height: 120,
+        borderRadius: 10,
+    },
+
     pictureButtonIcon: {
         fontSize: 100,
         color: "white"

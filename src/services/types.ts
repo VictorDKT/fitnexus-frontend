@@ -20,6 +20,7 @@ export type Profile = {
     training_dates: Date[],
     conquests: Conquest[],
     solicitated?: boolean,
+    role: string,
 }
 
 export type Conquest = {

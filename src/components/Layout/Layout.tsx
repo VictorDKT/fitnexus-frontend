@@ -4,6 +4,9 @@ import { useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/FontAwesome5';
+import Icon5 from 'react-native-vector-icons/FontAwesome6';
+import Icon6 from 'react-native-vector-icons/MaterialIcons';
+import Icon7 from 'react-native-vector-icons/Ionicons';
 import { useAuth } from "../../context/Auth";
 
 interface ILayoutProps {
@@ -13,6 +16,7 @@ interface ILayoutProps {
     refreshControl?: JSX.Element,
     scrollable?: boolean,
     hasNavbar?: boolean,
+    hasTreinerBar?: boolean,
 }
 
 export let openLoader: ()=>void;
@@ -29,7 +33,7 @@ export function Layout(props: ILayoutProps) {
     return (
         <View style={styles.layout}>
             {loading && <ActivityIndicator style={styles.loader} size="large" color="#E71D27" />}
-            <View style={{height: props.hasNavbar ? screenHeight - 75 : "100%"}}>
+            <View style={{height: props.hasNavbar || props.hasTreinerBar ? screenHeight - 75 : "100%"}}>
                 {!props.scrollable ?
                     <View  style={styles.page}>
                         <View style={{height: "100%", width: "100%"}}>
@@ -44,14 +48,14 @@ export function Layout(props: ILayoutProps) {
                     </ScrollView>
                 }
             </View>
-           {props.hasNavbar && <View style={styles.navBar}>
+            {props.hasNavbar && <View style={styles.navBar}>
                 <TouchableOpacity 
                     style={props.page === "home" ? styles.navItemActive : styles.navItem}
                     onPress={()=>{
                         props.navigation.navigate("HomePage")
                     }}
                 >
-                    <Icon size={20} name="home-variant-outline" style={props.page === "home" ? styles.navIconActive : styles.navIcon} />
+                    <Icon7 size={20} name="home-sharp" style={props.page === "home" ? styles.navIconActive : styles.navIcon} />
                     <Text style={props.page === "home" ? styles.navTextActive : styles.navText}>Início</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
@@ -80,6 +84,35 @@ export function Layout(props: ILayoutProps) {
                 >
                     <Icon3 size={20} name="user"  style={props.page === "profile" ? styles.navIconActive : styles.navIcon} />
                     <Text style={props.page === "profile" ? styles.navTextActive : styles.navText}>Perfil</Text>
+                </TouchableOpacity>
+            </View>}
+            {props.hasTreinerBar && <View style={styles.navBar}>
+                <TouchableOpacity 
+                    style={props.page === "users" ? styles.navItemActive : styles.navItem}
+                    onPress={()=>{
+                        props.navigation.navigate("UsersPage")
+                    }}
+                >
+                    <Icon4 size={20} name="user-friends"  style={props.page === "users" ? styles.navIconActive : styles.navIcon} />
+                    <Text style={props.page === "users" ? styles.navTextActive : styles.navText}>Usuários</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={props.page === "trainings" ? styles.navItemActive : styles.navItem}
+                    onPress={()=>{
+                        props.navigation.navigate("TrainingsPage")
+                    }}
+                >
+                    <Icon6 size={20} name="sports-kabaddi"  style={props.page === "trainings" ? styles.navIconActive : styles.navIcon} />
+                    <Text style={props.page === "trainings" ? styles.navTextActive : styles.navText}>Treinos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={props.page === "exercicies" ? styles.navItemActive : styles.navItem}
+                    onPress={()=>{
+                        props.navigation.navigate("ExerciciesPage")
+                    }}
+                >
+                    <Icon5 size={20} name="dumbbell"  style={props.page === "exercicies" ? styles.navIconActive : styles.navIcon} />
+                    <Text style={props.page === "exercicies" ? styles.navTextActive : styles.navText}>Exercicios</Text>
                 </TouchableOpacity>
             </View>}
         </View>

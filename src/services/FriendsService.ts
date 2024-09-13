@@ -6,6 +6,11 @@ export async function getMyFriends(): Promise<Profile[]> {
   return response.data.data;
 }
 
+export async function getUsers(): Promise<Profile[]> {
+  const response = await api.get(`/users`);
+  return response.data.data;
+}
+
 export async function getMySolicitations(): Promise<Profile[]> {
   const response = await api.get(`/user/friends/solicitations`);
   return response.data.data;

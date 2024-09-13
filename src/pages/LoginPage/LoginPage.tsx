@@ -35,7 +35,11 @@ export function LoginPage({navigation}: {navigation: any}) {
                 role: data.role,
                 token: data.access_token
             });
-            navigation.navigate("HomePage")
+            if(data.role === "trainer") {
+                navigation.navigate("UsersPage")
+            } else {
+                navigation.navigate("HomePage")
+            }
         } catch (error) {
             Alert.alert("OOPS!", "Login ou senha incorretos.", [{
                 text: "Entendi", onPress: ()=>{}

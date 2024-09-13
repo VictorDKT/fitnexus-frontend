@@ -1,7 +1,7 @@
 import React, {createContext, useState, useContext, useEffect, ReactNode} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 
 type AuthData = {
   _id: string,
@@ -60,20 +60,9 @@ const AuthProvider = ({children}: {children: ReactNode}) => {
         index: 0,
         routes: [
           {name: "LoginPage"},
-          /*{name: "HomePage"},
-          {name: "MissionsPage"},
-          {name: "ProfilePage"},
-          {name: "FriendsPage"},
-          {name: "NotificationsPage"},
-          {name: "TreinoPage"},
-          {name: "ExercicioPage"},
-          {name: "ConquestsPage"},
-          {name: "RegisterPage"},
-          {name: "SearchFriendsPage"},
-          {name: "ChallengeFriendPage"},*/
         ],
       })
-  );
+    );
   };
 
   return (

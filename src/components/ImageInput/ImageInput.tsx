@@ -8,6 +8,7 @@ import styles from './ImageInputStyles'
 function ImageInput(props: {
     callback: (value: string)=>void,
     defaultValue?: string,
+    landscapeRatio?: boolean,
 }) {
     const [image, setImage] = useState('');
 
@@ -21,7 +22,7 @@ function ImageInput(props: {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
-          aspect: [1, 1],
+          aspect: props.landscapeRatio ? [5,3] : [1, 1],
           quality: 1,
         });
     
@@ -41,10 +42,10 @@ function ImageInput(props: {
     return (
         <View style={styles.container}>
             {image ? 
-                <TouchableOpacity onPress={pickImage}><Image source={{uri: image}} style={styles.image} /></TouchableOpacity>
+                <TouchableOpacity style={{marginTop: 20}} onPress={pickImage}><Image source={{uri: image}} style={props.landscapeRatio ? styles.imageLand : styles.image} /></TouchableOpacity>
                 :
-                <TouchableOpacity onPress={pickImage}>
-                    <Icon style={styles.pictureButtonIcon} name="user-circle-o"/>
+                <TouchableOpacity style={{marginTop: 20}} onPress={pickImage}>
+                    <Icon style={styles.pictureButtonIcon} name={props.landscapeRatio ? "picture-o" : "user-circle-o"}/>
                 </TouchableOpacity>
             }
         </View>

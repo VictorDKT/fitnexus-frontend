@@ -15,6 +15,7 @@ interface IFormGroupProps {
     errorMessage?: string,
     defaultValue?: string,
     label?: string,
+    landscapeRatio?: boolean,
 }
 
 export function FormGroup(props: IFormGroupProps) {
@@ -85,6 +86,7 @@ function renderImageInput(props: IFormGroupProps) {
             <ImageInput
                 callback={props.callback}
                 defaultValue={props.defaultValue}
+                landscapeRatio={props.landscapeRatio}
             />
             <Text style={styles.error}>{props.errorMessage}</Text>
         </View>
@@ -126,6 +128,7 @@ export function RenderSelectInput(props: IFormGroupProps) {
 
     return (
         <View style={styles.inputView}>
+            {props.label && <Text style={styles.label}>{props.label}</Text>}
             <RNPickerSelect
                 useNativeAndroidPickerStyle={false}
                 onValueChange={(value) => {
@@ -133,7 +136,7 @@ export function RenderSelectInput(props: IFormGroupProps) {
                     setValue(value);
                 }}
                 value={value}
-                placeholder={{label: props.placeholder, value: null }}
+                placeholder={{label: props.placeholder, value: null, disabled: true, hidden: true }}
                 style={{inputIOS: styles.input, inputAndroid: styles.input}}
                 items={props.options ? props.options : []}
                 
