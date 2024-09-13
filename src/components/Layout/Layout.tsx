@@ -114,6 +114,15 @@ export function Layout(props: ILayoutProps) {
                     <Icon5 size={20} name="dumbbell"  style={props.page === "exercicies" ? styles.navIconActive : styles.navIcon} />
                     <Text style={props.page === "exercicies" ? styles.navTextActive : styles.navText}>Exercicios</Text>
                 </TouchableOpacity>
+                <TouchableOpacity 
+                    style={props.page === "profile" ? styles.navItemActive : styles.navItem}
+                    onPress={()=>{
+                        props.navigation.navigate("ProfilePage", { id: authData?._id, trainer: true, })
+                    }}
+                >
+                    <Icon3 size={20} name="user"  style={props.page === "profile" ? styles.navIconActive : styles.navIcon} />
+                    <Text style={props.page === "profile" ? styles.navTextActive : styles.navText}>Perfil</Text>
+                </TouchableOpacity>
             </View>}
         </View>
     )

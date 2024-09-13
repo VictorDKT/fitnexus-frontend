@@ -14,11 +14,11 @@ import { Profile } from "../../services/types";
 export function ProfilePage({ 
     navigation,
     route: {
-        params: { id, search },
+        params: { id, search, trainer },
     },
 }: {
     navigation: any;
-    route: { params: { id: string, search: boolean } };
+    route: { params: { id: string, search: boolean, trainer: boolean } };
 }) {
     const [isEdit, setIsEdit] = useState(false);
     const {signOut, authData} = useAuth();
@@ -43,7 +43,8 @@ export function ProfilePage({
         <Layout
             page='profile'
             navigation={navigation}
-            hasNavbar={isEdit ? true : false}
+            hasNavbar={trainer ? false : isEdit ? true : false}
+            hasTreinerBar={trainer}
             scrollable={true}
             refreshControl={
                 <RefreshControl
