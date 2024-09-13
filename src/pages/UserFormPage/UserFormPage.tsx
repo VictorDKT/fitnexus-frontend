@@ -70,14 +70,18 @@ export function UserFormPage({
     setLoading(true);
     try {
       await addUserToTraining(formData.training, user.id);
+      Alert.alert("Sucesso!", `Treino ${userJaTemTreino() ? 'removido' : 'adicionado'} com sucesso!`);
       await loadUserProfile();
-      Alert.alert("Sucesso!", "Treino adicionado com sucesso!");
     } catch (error) {
 
     }
     finally{
       setLoading(false);
     }
+  }
+
+  function userJaTemTreino(){
+    return currentTrainings.some(t => t.id === formData.training);
   }
 
   return (
@@ -146,7 +150,7 @@ export function UserFormPage({
           <View style={styles.buttonBox2}>
             <Button
               type="primary"
-              label="Adicionar"
+              label={userJaTemTreino() ? "Remover treino" : "Adicionar treino"}
               callback={()=>{
                 const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
