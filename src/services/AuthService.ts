@@ -11,6 +11,6 @@ export async function  registerRequest(name: string, login: string, password: st
 }
 
 export async function  editUserRequest(id: string, name: string, login: string, image: string, goal: string, workouts_per_week: number, description: string){
-    const response = await api.post(`/auth/register/${id}`, {name, login, image, goal, workouts_per_week, description});
+    const response = await api.patch(`/auth/me`, {name, login, image, goal, workouts_per_week, description});
     return response.data
 }

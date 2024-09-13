@@ -22,7 +22,7 @@ function onSuccess(response: any) {
 async function onError(exception: any) {
   const isLogged = await AsyncStorage.getItem("@AuthData");
   if (exception.response.status === 401 && isLogged) {
-   // signOut(navigationRef);
+    signOut(navigationRef);
   }
   return Promise.reject(exception);
 }

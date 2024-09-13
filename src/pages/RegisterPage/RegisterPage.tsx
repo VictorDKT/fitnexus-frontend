@@ -52,7 +52,7 @@ export function RegisterPage({
 
     const fieldsValidations: Record<string, string[]> = {
         email: ["mandatory"],
-        password: ["mandatory", "password"],
+        password: id ? [] : ["mandatory", "password"],
         name: ["mandatory"],
         image: ["mandatory"],
         goal: ["mandatory"],
@@ -60,19 +60,20 @@ export function RegisterPage({
         description: ["mandatory"]
     }
 
-    async function registrar(id?: string){
+    async function registrar(){
         try {
             const data = id 
             ? await editUserRequest(id, formData.name.trim(), formData.email, formData.image, formData.goal, Number(formData.workouts_per_week), formData.description.trim())
             : await registerRequest(formData.name.trim(), formData.email, formData.password, formData.image, formData.goal, Number(formData.workouts_per_week), formData.description.trim());
-            signIn({
-                _id: data.id,
-                name: data.name,
-                login: data.login,
-                role: data.role,
-                token: data.access_token
-            });
-            navigation.navigate("HomePage")
+            if (!id)
+                signIn({
+                    _id: data.id,
+                    name: data.name,
+                    login: data.login,
+                    role: data.role,
+                    token: data.access_token
+                });
+            navigation.navigate(id ? 'ProfilePage' :"HomePage", {id: id})
         } catch (error) {
             Alert.alert("OOPS!", "Ocorreu um erro ao tentar registrar, tente novamente mais tarde.")
         }
