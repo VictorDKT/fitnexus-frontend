@@ -1,5 +1,12 @@
 {
   "name": "fixnexus",
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  },
   "expo": {
     "name": "fixnexus",
     "slug": "fixnexus",
