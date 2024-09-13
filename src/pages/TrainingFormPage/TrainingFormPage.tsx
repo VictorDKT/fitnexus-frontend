@@ -8,13 +8,15 @@ import { validateAllInputs, validateInput } from "../../Tools/validateInputs";
 import { Button } from "../../components/Button/Button";
 import { CommonActions } from '@react-navigation/native';
 import { getExercicies } from "../../services/ExerciseService";
+import { createTraining } from "../../services/TrainingService";
+import { RefreshControl } from "react-native-gesture-handler";
 
 export function TrainingFormPage({
   navigation,
 }: {
   navigation: any;
 }) {
-  const [formData, setFormData] = useState<Record<string, unknown>>({exercicies: []});
+  const [formData, setFormData] = useState<Record<string, unknown>>({exercises: []});
   const [exercicieData, setExercicieData] = useState<Record<string, string>>({});
   const [validations, setValidations] = useState<Record<string, unknown>>({});
   const [validations2, setValidations2] = useState<Record<string, unknown>>({});
@@ -32,7 +34,8 @@ export function TrainingFormPage({
 
   const fieldsValidations: Record<string, string[]> = {
     name: ["mandatory"],
-    exercicies: ["mandatoryArray"],
+    image: ["mandatory"],
+    exercises: ["mandatoryArray"],
   }
 
   const fieldsValidations2: Record<string, string[]> = {
@@ -42,29 +45,63 @@ export function TrainingFormPage({
     id: ["mandatory"]
   }
 
-  const [exercicies, setExercicies] = useState<{ label: string, value: string }[]>([]);
+  const [exercises, setExercises] = useState<{ label: string, value: string }[]>([]);
 
-  async function loadExercicies() {
+  async function loadExercises() {
     setLoading(true);
-    const exercicies = (await getExercicies()).map(exercise=>{
+    const exercises = (await getExercicies()).map(exercise=>{
       return ({
         label: exercise.name as string,
         value: exercise.id as string,
       })
     });
-    setExercicies(exercicies);
+    setExercises(exercises);
     setLoading(false);
   }
 
   useEffect(() => {
-    loadExercicies();
+    loadExercises();
   }, []);
+
+  async function registrar(){
+    const dataToSend = JSON.parse(JSON.stringify(formData));
+    dataToSend.exercises = (dataToSend.exercises as Record<string, unknown>[]).map(item=>{
+      return {
+        load: Number(item.load),
+        series: Number(item.series),
+        repetitions: Number(item.repetitions),
+        exercise: {
+          id: item.id
+        }
+      }
+    })
+    setLoading(true);
+    try {
+      await createTraining(dataToSend);
+      Alert.alert("Sucesso!", "Treino cadastrado com sucesso!");
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {name: "TrainingsPage"},
+          ],
+        })
+      );
+    } catch(ex) {
+      console.log(ex);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Layout 
       page="trainingForm" 
       navigation={navigation} 
       scrollable={true} 
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={loadExercises} />
+      }
     >
       <PageHeader
         title="Cadastrar Treino"
@@ -98,8 +135,25 @@ export function TrainingFormPage({
         </View>
         <View style={styles.inputContainer}>
           <FormGroup
+            type={"image"}
+            defaultValue={formData.image as string}
+            label={"Foto do exercício"}
+            landscapeRatio={true}
+            placeholder='Insira a foto do exercício'
+            errorMessage={validations.image as string}
+            callback={(value: string | string[])=>{
+              const newFormData = {...formData};
+              newFormData["image"] = value as string;
+              const error = validateInput(value, fieldsValidations.image)
+              validationCallback("image", error);
+              setFormData(newFormData);
+            }}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <FormGroup
             type={"select"}
-            options={exercicies}
+            options={exercises}
             label={"Exercício"}
             defaultValue={exercicieData.id as string}
             placeholder='Selecione um exercício'
@@ -170,10 +224,10 @@ export function TrainingFormPage({
 
               if(validationResult.success) {
                 const newFormData = {...formData};
-                const exerciciesIds = (newFormData["exercicies"] as Record<string, unknown>[]).map(item=>item.id);
+                const exercisesIds = (newFormData["exercises"] as Record<string, unknown>[]).map(item=>item.id);
 
-                if(!newFormData["exercicies"] || !exerciciesIds.includes(exercicieData.id)) {
-                  newFormData["exercicies"] = [...(newFormData["exercicies"] as Record<string, unknown>[]), exercicieData];
+                if(!newFormData["exercises"] || !exercisesIds.includes(exercicieData.id)) {
+                  newFormData["exercises"] = [...(newFormData["exercises"] as Record<string, unknown>[]), exercicieData];
                   setFormData(newFormData);
                 } else {
                   Alert.alert("OOPS!", "Esse exercício já faz parte do treino.", [{
@@ -191,11 +245,11 @@ export function TrainingFormPage({
         </View>
         <View style={styles.inputContainer}>
           {
-            (formData.exercicies as Record<string, unknown>[]).map((exercise, index)=>{
+            (formData.exercises as Record<string, unknown>[]).map((exercise, index)=>{
               return (
                 <View style={styles.execiseBox} key={index}>
                   <View>
-                    <Text style={styles.execiseName}>{(exercicies.find(option=>option.value === exercise.id) as Record<string, string>).label}</Text>
+                    <Text style={styles.execiseName}>{(exercises.find(option=>option.value === exercise.id) as Record<string, string>).label}</Text>
                     <Text style={styles.exerciseData}>Carga: {exercise.load as string}</Text>
                     <Text style={styles.exerciseData}>Series: {exercise.series as string}</Text>
                     <Text style={styles.exerciseData}>Repetições: {exercise.repetitions as string}</Text>
@@ -206,7 +260,7 @@ export function TrainingFormPage({
                       label="Remover"
                       callback={()=>{
                         const newFormData = {...formData};
-                        newFormData["exercicies"] = (newFormData["exercicies"] as Record<string, unknown>[]).filter(item=>item.id !== exercise.id);
+                        newFormData["exercises"] = (newFormData["exercises"] as Record<string, unknown>[]).filter(item=>item.id !== exercise.id);
                         setFormData(newFormData);
                       }}
                     />
@@ -241,15 +295,7 @@ export function TrainingFormPage({
                 const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                 if(validationResult.success) {
-                  //registrar()
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [
-                        {name: "TrainingsPage"},
-                      ],
-                    })
-                  );
+                  registrar()
                 } else {
                   setValidations(validationResult.errors);
                   Alert.alert("OOPS!", "Um ou mais campos não estão preenchidos corretamente.", [{
