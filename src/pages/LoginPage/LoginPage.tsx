@@ -28,7 +28,7 @@ export function LoginPage({navigation}: {navigation: any}) {
         try {
             // iniciar loading?
             const data = await loginRequest(login, password);
-            signIn({
+            await signIn({
                 _id: data.id,
                 name: data.name,
                 login: data.login,
