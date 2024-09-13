@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fitnexus.front"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -27,6 +28,11 @@
     "plugins": [
       "expo-font",
       "expo-asset"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f6a7804c-66ce-4559-b839-41b1e6f97d75"
+      }
+    }
   }
 }
