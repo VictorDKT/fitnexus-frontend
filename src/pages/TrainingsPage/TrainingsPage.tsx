@@ -47,7 +47,7 @@ export function TrainingsPage({
           />
           {trainings.map(training=>{
             return (
-              <View style={styles.exerciseContainer}>
+              <View key={training.id} style={styles.exerciseContainer}>
                 <View style={styles.exerciseHeader}>
                   <Text style={styles.exerciseText}>{training.name}</Text>
                 </View>

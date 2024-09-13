@@ -41,7 +41,7 @@ export function UsersPage({
         <View style={{marginBottom: 20}}>
           {users.map(user=>{
             return (
-              <View style={styles.exerciseContainer}>
+              <View key={user.id} style={styles.exerciseContainer}>
                 <View style={styles.exerciseHeader}>
                   <Image
                     style={styles.exerciseImage}

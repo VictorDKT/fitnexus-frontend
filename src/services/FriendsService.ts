@@ -7,7 +7,7 @@ export async function getMyFriends(): Promise<Profile[]> {
 }
 
 export async function getUsers(): Promise<Profile[]> {
-  const response = await api.get(`/users`);
+  const response = await api.get(`/user`);
   return response.data.data;
 }
 
