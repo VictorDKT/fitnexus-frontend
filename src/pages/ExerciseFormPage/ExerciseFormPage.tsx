@@ -7,15 +7,31 @@ import { FormGroup } from "../../components/FormGroup/FormGroup";
 import { validateAllInputs, validateInput } from "../../Tools/validateInputs";
 import { Button } from "../../components/Button/Button";
 import { CommonActions } from '@react-navigation/native';
+import { RefreshControl } from "react-native-gesture-handler";
+import { createExercise, getExercise, updateExercise } from "../../services/ExerciseService";
 
 export function ExerciseFormPage({
   navigation,
+  route: { params: { id },},
 }: {
   navigation: any;
+  route: any;
 }) {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [validations, setValidations] = useState<Record<string, unknown>>({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (id){
+      setLoading(true)
+      getExercise(id).then((exercise)=>{
+        setFormData(exercise);
+      }).finally(() => setLoading(false))
+    } else {
+      setFormData({})
+    }
+  }, [id])
+
   const validationCallback = (field: string, value: string | string[] | null)=>{
     const newValidations = {...validations};
     newValidations[field] = value;
@@ -28,11 +44,39 @@ export function ExerciseFormPage({
     description: ["mandatory"]
   }
 
+  async function registrar(){
+    setLoading(true);
+    try {
+      if (formData.id){
+        await updateExercise(formData as any)
+      } else {
+        await createExercise(formData as any)
+      }
+      Alert.alert("Sucesso", `Exercício ${!formData.id ? 'criado' : 'editado'} com sucesso!`);
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {name: "ExerciciesPage"},
+          ],
+        })
+      );
+
+    } catch(error){
+      console.log(error);
+    } finally{
+      setLoading(false);
+    }
+  }
+
   return (
     <Layout 
       page="exerciciesForm" 
       navigation={navigation} 
       scrollable={true} 
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={() => {}}/>
+      }
     >
       <PageHeader
         title="Cadastrar exercício"
@@ -91,7 +135,7 @@ export function ExerciseFormPage({
             callback={(value: string | string[])=>{
               const newFormData = {...formData};
               newFormData["description"] = value as string;
-              const error = validateInput(value, fieldsValidations.email)
+              const error = validateInput(value, fieldsValidations.description)
               validationCallback("description", error);
               setFormData(newFormData);
             }}
@@ -122,15 +166,8 @@ export function ExerciseFormPage({
                 const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                 if(validationResult.success) {
-                  //registrar()
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [
-                        {name: "ExerciciesPage"},
-                      ],
-                    })
-                  );
+                  registrar()
+                  
                 } else {
                   setValidations(validationResult.errors);
                   Alert.alert("OOPS!", "Um ou mais campos não estão preenchidos corretamente.", [{
