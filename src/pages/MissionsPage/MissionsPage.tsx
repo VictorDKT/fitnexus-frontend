@@ -48,7 +48,7 @@ export function ChallengeComponent({ challenge }: { challenge: Challenge }) {
         <View style={styles.challengeProgressBarContainer}>
           <ProgressBar progress={challenge.progress ? challenge.progress : 0} />
         </View>
-        <Text style={styles.progressLabel}>50%</Text>
+        <Text style={styles.progressLabel}>{challenge.progress}%</Text>
       </View>
     </View>
   );

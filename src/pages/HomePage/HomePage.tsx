@@ -82,7 +82,7 @@ export function HomePage({ navigation }: { navigation: any }) {
           />
           <View style={styles.homeImageContainer}>
             <Text style={styles.academyTitle}>Academia FitNexus</Text>
-            <Text style={styles.academySubTitle}>Olá, {authData?.name}!</Text>
+            <Text style={styles.academySubTitle}>Olá, {authData?.name?.trim()}!</Text>
           </View>
           <LinearGradient
             style={styles.gradiant2}
