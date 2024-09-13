@@ -98,7 +98,7 @@ export function HomePage({ navigation }: { navigation: any }) {
             </View>
             <View style={styles.progressContainer}>
               <Text style={styles.progressLabel}>
-                Você treinou {profile.training_dates?.length} vezes essa semana
+                Você treinou {profile.training_dates?.length} {profile.training_dates?.length > 1 ? 'vezes' : 'vez'} nessa semana
               </Text>
               <ProgressBar progress={(profile.training_dates?.length/profile.workouts_per_week) * 100} />
             </View>
