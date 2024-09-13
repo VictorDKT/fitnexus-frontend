@@ -6,6 +6,10 @@ const styles = StyleSheet.create({
         marginBottom: 0,
     },
 
+    exerciseContainer: {
+        marginBottom: 20,
+    },
+
     footer: {
         flex: 1,
         flexDirection: "row",
@@ -21,6 +25,12 @@ const styles = StyleSheet.create({
         width: "50%",
         paddingLeft: 10,
     },
+
+    inputLabel: {
+        fontSize: 16,
+        color: "#fff",
+        marginBottom: 5,
+    }
 });
 
 export default styles;

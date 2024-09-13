@@ -1,5 +1,5 @@
-import { Profile } from "../context/ProfileContext";
 import api from "./api";
+import { Profile } from "./types";
 
 export async function getProfile(id: string): Promise<Profile> {
     const response = await api.get(`/user/profile/${id}`);

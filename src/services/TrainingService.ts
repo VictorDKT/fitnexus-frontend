@@ -15,3 +15,8 @@ export async function finishTraining(){
     const response = await api.post('/trainingdate/me')
     return response.data
 }
+
+export async function addUserToTraining(trainingId: string, userId: string){
+    const response = await api.post(`/training/${trainingId}/add-user/${userId}`)
+    return response.data
+}

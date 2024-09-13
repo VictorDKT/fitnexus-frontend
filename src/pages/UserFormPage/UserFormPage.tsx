@@ -8,7 +8,9 @@ import { validateAllInputs, validateInput } from "../../Tools/validateInputs";
 import { Button } from "../../components/Button/Button";
 import { CommonActions } from '@react-navigation/native';
 import { Profile, Training } from "../../services/types";
-import { getTrainings } from "../../services/TrainingService";
+import { addUserToTraining, getMyTrainings, getTrainings } from "../../services/TrainingService";
+import { getProfile } from "../../services/ProfileService";
+import { RefreshControl } from "react-native-gesture-handler";
 
 export function UserFormPage({
   navigation,
@@ -22,6 +24,20 @@ export function UserFormPage({
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [validations, setValidations] = useState<Record<string, unknown>>({});
   const [trainings, setTrainings] = useState<{label: string, value: string}[]>([]);
+  const [userProfile, setUserProfile] = useState<Profile>(user);
+  const [currentTrainings, setCurrentTrainings] = useState<Training[]>([]);
+
+  async function loadUserProfile() {
+    const [userProfile, trainings] = await Promise.all([getProfile(user.id), getMyTrainings(user.id)]);
+    setUserProfile(userProfile);
+    setCurrentTrainings(trainings);
+  }
+
+  useEffect(() => {
+    if (user?.id){
+      loadUserProfile();
+    }
+  }, [user?.id])
 
   async function loadTrainings() {
     setLoading(true);
@@ -38,6 +54,7 @@ export function UserFormPage({
   useEffect(() => {
     loadTrainings();
   }, []);
+
   const [loading, setLoading] = useState(false);
   const validationCallback = (field: string, value: string | string[] | null)=>{
     const newValidations = {...validations};
@@ -49,11 +66,28 @@ export function UserFormPage({
     training: ["mandatory"],
   }
 
+  async function adicionarTreino(){
+    setLoading(true);
+    try {
+      await addUserToTraining(formData.training, user.id);
+      await loadUserProfile();
+      Alert.alert("Sucesso!", "Treino adicionado com sucesso!");
+    } catch (error) {
+
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
   return (
     <Layout 
       page="userForm" 
       navigation={navigation} 
       scrollable={true} 
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={loadUserProfile} />
+      }
     >
       <PageHeader
         title={`Novo treino (${user.name.trim()})`}
@@ -69,6 +103,12 @@ export function UserFormPage({
         }}
       />
       <View style={{ width: "100%", padding: 20 }}>
+        <View style={styles.exerciseContainer}>
+          <Text style={styles.inputLabel}>Nome: {userProfile.name}</Text>
+          <Text style={styles.inputLabel}>Treinos pro semana: {userProfile.workouts_per_week}</Text>
+          <Text style={styles.inputLabel}>Objetivo: {userProfile.goal}</Text>
+          <Text style={styles.inputLabel}>Treinos atuais: {currentTrainings.map(t => t.name).join(", ")}</ Text>
+        </View>
         <View style={styles.inputContainer}>
           <FormGroup
             type={"select"}
@@ -111,15 +151,7 @@ export function UserFormPage({
                 const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                 if(validationResult.success) {
-                  //registrar()
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [
-                        {name: "UsersPage"},
-                      ],
-                    })
-                  );
+                  adicionarTreino()
                 } else {
                   setValidations(validationResult.errors);
                   Alert.alert("OOPS!", "Um ou mais campos não estão preenchidos corretamente.", [{
