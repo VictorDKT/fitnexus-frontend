@@ -1,6 +1,7 @@
 import axios from "axios";
 import { signOut } from "../context/Auth";
 import { navigationRef } from "../routes/RootNavigation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -18,8 +19,9 @@ function onSuccess(response: any) {
   return response;
 }
 
-function onError(exception: any) {
-  if (exception.response.status === 401){
+async function onError(exception: any) {
+  const isLogged = await AsyncStorage.getItem("@AuthData");
+  if (exception.response.status === 401 && isLogged) {
     signOut(navigationRef);
   }
   return Promise.reject(exception);
