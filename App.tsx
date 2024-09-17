@@ -1,13 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import AppStack from './src/routes/AppStack';
-import 'moment/locale/pt-br';
-import moment from 'moment';
 import { Text, StyleSheet, SafeAreaView } from 'react-native';
 import { AuthProvider } from './src/context/Auth';
 import { useFonts } from 'expo-font';
 
 export default function App() {
-  moment.locale("pt-br")
   const [fontsLoaded] = useFonts({
     'SpaceGrotesk-Bold': require('./assets/fonts/SpaceGrotesk-Bold.ttf'),
     'SpaceGrotesk-SemiBold': require('./assets/fonts/SpaceGrotesk-SemiBold.ttf'),

@@ -54,7 +54,7 @@ export function LoginPage({navigation}: {navigation: any}) {
             scrollable={false}
         >
             <View style={styles.loginContainer}>
-            <Text style={styles.titlePage2}>FitNexus</Text>
+            <Text style={styles.titlePage2}>FITNEXUS</Text>
             <Text style={styles.titlePage}>Seja bem vindo!</Text>
             <View style={styles.inputContainer}>
                     <FormGroup

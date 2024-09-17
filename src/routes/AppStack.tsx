@@ -96,7 +96,7 @@ function AppStack() {
                 }}
                 backBehavior="history"
             >
-                {(authData ? authData.role === "trainer" ? trainerRoutes : privateRoutes : publicRoutes).map(route => {
+                {(authData ? (authData.role === "trainer" ? trainerRoutes : privateRoutes) : publicRoutes).map(route => {
                         return(
                             <Screen key={route.name} name={route.name} component={route.component} />
                         )
