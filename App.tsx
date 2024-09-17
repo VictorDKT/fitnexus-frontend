@@ -15,13 +15,13 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return;
+    return <Text>Carregando fontes</Text>;
   }
 
   return (
     <AuthProvider>
       <SafeAreaView style={styles.safeArea}>
-        <Text></Text>
+        <Text>Teste</Text>
         <AppStack />
         <StatusBar style="auto" />
       </SafeAreaView>

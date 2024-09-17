@@ -1,6 +1,6 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginPage } from "../pages/LoginPage/LoginPage";
 import { HomePage } from "../pages/HomePage/HomePage";
 import { useAuth } from "../context/Auth";
@@ -22,7 +22,7 @@ import { TrainingsPage } from "../pages/TrainingsPage/TrainingsPage";
 import { TrainingFormPage } from "../pages/TrainingFormPage/TrainingFormPage";
 import { UserFormPage } from "../pages/UserFormPage/UserFormPage";
 
-const { Navigator, Screen } = createDrawerNavigator();
+const { Navigator, Screen } = createNativeStackNavigator();
 
 type Route = {
     name: string,
@@ -94,7 +94,6 @@ function AppStack() {
                 screenOptions={{
                     headerShown: false,
                 }}
-                backBehavior="history"
             >
                 {(authData ? (authData.role === "trainer" ? trainerRoutes : privateRoutes) : publicRoutes).map(route => {
                         return(
