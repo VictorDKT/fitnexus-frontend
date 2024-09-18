@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import AppStack from './src/routes/AppStack';
-import { Text, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider } from './src/context/Auth';
 import { useFonts } from 'expo-font';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,11 +22,12 @@ export default function App() {
 
   return (
     <AuthProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
-        <Text>Teste</Text>
         <AppStack />
         <StatusBar style="auto" />
       </SafeAreaView>
+      </GestureHandlerRootView>
     </AuthProvider>
   );
 }

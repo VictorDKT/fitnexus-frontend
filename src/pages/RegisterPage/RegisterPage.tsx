@@ -16,9 +16,9 @@ export function RegisterPage({
     },
 }: {
     navigation: any;
-    route: { params: { id: string, search: boolean } };
+    route: { params: { id?: string | null } };
 }) {
-    const [formData, setFormData] = useState<Record<string, string>>({});
+    const [formData, setFormData] = useState<Record<string, unknown>>({});
     const [validations, setValidations] = useState<Record<string, unknown>>({});
     const {authData} = useAuth();
     const {signIn} = useAuth();
@@ -63,8 +63,8 @@ export function RegisterPage({
     async function registrar(){
         try {
             const data = id 
-            ? await editUserRequest(id, formData.name.trim(), formData.email, formData.image, formData.goal, Number(formData.workouts_per_week), formData.description.trim())
-            : await registerRequest(formData.name.trim(), formData.email, formData.password, formData.image, formData.goal, Number(formData.workouts_per_week), formData.description.trim());
+            ? await editUserRequest(id, (formData.name  as string).trim(), formData.email as string, formData.image as string, formData.goal as string, Number(formData.workouts_per_week), (formData.description  as string).trim())
+            : await registerRequest((formData.name as string).trim(), formData.email as string, formData.password as string, formData.image as string, formData.goal as string, Number(formData.workouts_per_week), (formData.description  as string).trim());
             if (!id)
                 signIn({
                     _id: data.id,
@@ -90,7 +90,7 @@ export function RegisterPage({
                 <View style={styles.inputContainer}>
                     <FormGroup
                         type={"image"}
-                        defaultValue={formData.image}
+                        defaultValue={formData.image as string}
                         label={"Foto de perfil"}
                         placeholder='Insira seu nome'
                         errorMessage={validations.image as string}
@@ -104,7 +104,7 @@ export function RegisterPage({
                     />
                     <FormGroup
                         type={"text"}
-                        defaultValue={formData.name}
+                        defaultValue={formData.name as string}
                         label={"Nome"}
                         placeholder='Insira seu nome'
                         errorMessage={validations.name as string}
@@ -120,7 +120,7 @@ export function RegisterPage({
                 <View style={styles.inputContainer}>
                     <FormGroup
                         type={"text"}
-                        defaultValue={formData.email}
+                        defaultValue={formData.email as string}
                         label='Email'
                         placeholder='Email'
                         errorMessage={validations.email as string}
@@ -152,7 +152,7 @@ export function RegisterPage({
                     <FormGroup
                         type={"text"}
                         label={"Meta"}
-                        defaultValue={formData.goal}
+                        defaultValue={formData.goal as string}
                         placeholder='Insira sua meta'
                         errorMessage={validations.goal as string}
                         callback={(value: string | string[])=>{
@@ -168,7 +168,7 @@ export function RegisterPage({
                     <FormGroup
                         type={"text"}
                         label={"Treinos por semana"}
-                        defaultValue={formData.workouts_per_week}
+                        defaultValue={formData.workouts_per_week as string}
                         placeholder='Quantidade de treinos por semana'
                         errorMessage={validations.workouts_per_week as string}
                         callback={(value: string | string[])=>{
@@ -184,7 +184,7 @@ export function RegisterPage({
                     <FormGroup
                         type={"text"}
                         label={"Bio"}
-                        defaultValue={formData.description}
+                        defaultValue={formData.description as string}
                         placeholder='Insira sua bio'
                         errorMessage={validations.description as string}
                         callback={(value: string | string[])=>{

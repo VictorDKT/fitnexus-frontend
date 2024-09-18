@@ -9,6 +9,7 @@ export type Post = {
 
 export type Profile = {
     id: string,
+    login: string,
     name: string,
     image: string,
     goal: string,
