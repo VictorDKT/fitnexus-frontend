@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import AppStack from './src/routes/AppStack';
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { AuthProvider } from './src/context/Auth';
 import { useFonts } from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-gesture-handler';
 
 export default function App() {
   const [fontsLoaded, error] = useFonts({
