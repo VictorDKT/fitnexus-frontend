@@ -12,7 +12,7 @@ import { useAuth } from "../../context/Auth";
 interface ILayoutProps {
     page: string,
     children: JSX.Element | JSX.Element[];
-    navigation: any,
+    navigation?: any,
     refreshControl?: JSX.Element,
     scrollable?: boolean,
     hasNavbar?: boolean,

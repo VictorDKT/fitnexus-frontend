@@ -30,7 +30,19 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/SpaceGrotesk-Bold.ttf",
+            "./assets/fonts/SpaceGrotesk-SemiBold.ttf",
+            "./assets/fonts/SpaceGrotesk-Regular.ttf",
+            "./assets/fonts/Lexend-Bold.ttf",
+            "./assets/fonts/Lexend-SemiBold.ttf",
+            "./assets/fonts/Lexend-Regular.ttf"
+          ]
+        }
+      ],
       "expo-asset"
     ],
     "extra": {

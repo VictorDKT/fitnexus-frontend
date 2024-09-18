@@ -1,13 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import AppStack from './src/routes/AppStack';
-import { Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, StyleSheet, View } from 'react-native';
 import { AuthProvider } from './src/context/Auth';
 import { useFonts } from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, error] = useFonts({
     'SpaceGrotesk-Bold': require('./assets/fonts/SpaceGrotesk-Bold.ttf'),
     'SpaceGrotesk-SemiBold': require('./assets/fonts/SpaceGrotesk-SemiBold.ttf'),
     'SpaceGrotesk-Regular': require('./assets/fonts/SpaceGrotesk-Regular.ttf'),
@@ -20,15 +19,17 @@ export default function App() {
     return <Text>Carregando fontes</Text>;
   }
 
+  if(error) {
+    return <Text>{`${error.name} ${error.message}`}</Text>;
+  }
+
   return (
-    <AuthProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
         <AppStack />
         <StatusBar style="auto" />
-      </SafeAreaView>
-      </GestureHandlerRootView>
-    </AuthProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
 
