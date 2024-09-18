@@ -35,7 +35,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {marginTop: 30},
   safeArea: {
-    paddingTop: 10,
     flex: 1,
     backgroundColor: "#1C1C1C",
     color: "white",

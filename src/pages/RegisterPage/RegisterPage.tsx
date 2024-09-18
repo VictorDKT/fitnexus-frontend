@@ -204,6 +204,7 @@ export function RegisterPage({
                             const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                             if(validationResult.success) {
+                                console.log("a")
                                 registrar()
                             } else {
                                 setValidations(validationResult.errors);
