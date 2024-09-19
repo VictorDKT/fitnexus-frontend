@@ -29,6 +29,7 @@ export type Conquest = {
     name: string,
     description: string,
     image: string,
+    unlocked: boolean,
 }
 
 export type Training = {

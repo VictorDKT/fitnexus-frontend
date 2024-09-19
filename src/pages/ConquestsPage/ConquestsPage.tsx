@@ -5,7 +5,7 @@ import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { useEffect, useState } from "react";
 import { Conquest } from "../../services/types";
 import { RefreshControl } from "react-native-gesture-handler";
-import { getMyConquests } from "../../services/ConquestService";
+import { getAllConquests, getMyConquests } from "../../services/ConquestService";
 import { useAuth } from "../../context/Auth";
 import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
 import { Modal } from "../../components/Modal/Modal";
@@ -30,7 +30,7 @@ function ConquestModal({ conquest, close }: { conquest?: Conquest, close: ()=>vo
 
 function ConquestItem({ conquest, callback }: { conquest: Conquest, callback: (conquest: Conquest)=>void }) {
   return (
-    <TouchableOpacity style={styles.conquestItem} onPress={()=>{callback(conquest)}}>
+    <TouchableOpacity style={[styles.conquestItem, conquest.unlocked ? undefined : styles.conquestItemLocked]} onPress={()=>{callback(conquest)}}>
       <Image style={styles.conquestImage} source={{ uri: conquest.image }} />
       <Text style={styles.conquestTitle}>{conquest.name}</Text>
       <Text style={styles.conquestText}>Nível 1</Text>
@@ -54,7 +54,9 @@ export function ConquestsPage({
 
   async function loadConquests() {
     openLoader();
-    const conquests = await getMyConquests();
+    const [all, my] = await Promise.all([getAllConquests(), getMyConquests()]);
+    const conquests = all.map(conquest => ({...conquest, unlocked: my.some(myConquest => myConquest.id === conquest.id)}));
+    conquests.sort((a, b) => a.unlocked ? -1 : 1);
     setConquest(conquests);
     closeLoader();
   }

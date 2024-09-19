@@ -19,6 +19,9 @@ const styles = StyleSheet.create({
         width: "33.33%",
         padding: 10,
     },
+    conquestItemLocked: {
+        opacity: 0.5,
+    },
     conquestImage: {
         borderRadius: 5,
         width: "100%",
