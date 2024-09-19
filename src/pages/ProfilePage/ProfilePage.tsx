@@ -1,4 +1,4 @@
-import { Image, ImageBackground, Text, View } from "react-native";
+import { Image, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { Layout } from "../../components/Layout/Layout";
 import styles from './ProfilePageStyles';
 import { PageHeader } from "../../components/PageHeader/PageHeader";
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { PostComponent } from "./Post";
 import { getProfile } from "../../services/ProfileService";
 import { Profile } from "../../services/types";
+import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
 
 export function ProfilePage({ 
     navigation,
@@ -23,16 +24,15 @@ export function ProfilePage({
     const [isEdit, setIsEdit] = useState(false);
     const {signOut, authData} = useAuth();
     const [profile, setProfile] = useState<Profile>({} as Profile);
-    const [loading, setLoading] = useState(false);
 
     async function loadProfile(){
-        setLoading(true);
+        openLoader();
         const profile = await getProfile(id || '');
         if(authData) {
             setIsEdit(authData?._id === id);
         }
         setProfile(profile);
-        setLoading(false);
+        closeLoader();
     }
 
     useEffect(() => {
@@ -48,7 +48,7 @@ export function ProfilePage({
             scrollable={true}
             refreshControl={
                 <RefreshControl
-                    refreshing={loading}
+                    refreshing={false}
                     onRefresh={loadProfile}
                 />
             }
@@ -79,7 +79,7 @@ export function ProfilePage({
                     </View>
                     <View style={styles.friendsBox}>
                         <Text style={styles.friendsBoxTitle}>Amigos</Text>
-                        <View style={styles.friendImagesContainer}>
+                        <TouchableOpacity style={styles.friendImagesContainer} onPress={()=>{navigation.navigate("FriendsPage")}}>
                             {profile.friends?.map((friend, index) => {
                                 return (
                                     <Image
@@ -89,10 +89,9 @@ export function ProfilePage({
                                     />
                                 )
                             })}
-
-                        </View>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.achivementsBox}>
+                    <TouchableOpacity style={styles.achivementsBox} onPress={()=>{navigation.navigate("ConquestsPage", { fromProfile: true })}}>
                         <Text style={styles.achivementsBoxTitle}>Conquistas</Text>
                         <ScrollView style={styles.achivementsContentBox} horizontal={true} showsHorizontalScrollIndicator={false}>
                             {profile.conquests?.map((conquest, index) => (
@@ -105,14 +104,14 @@ export function ProfilePage({
                                 </ImageBackground>
                             ))}
                         </ScrollView>
-                    </View>
+                    </TouchableOpacity>
                     <View style={styles.postBox}>
                         <Text style={styles.postTitle}>Publicações</Text>
                         {isEdit &&
-                            <SocialPostInput reload={loadProfile}/>
+                            <SocialPostInput setLoading={(value: boolean)=>{value ? openLoader() : closeLoader()}} reload={loadProfile}/>
                         }
                         {profile.posts?.map((post, index) => {
-                            return <PostComponent key={index} post={post} reload={loadProfile} setLoading={setLoading}/>
+                            return <PostComponent key={index} post={post} reload={loadProfile} setLoading={(value: boolean)=>{value ? openLoader() : closeLoader()}}/>
                         })}
                       
                     </View>

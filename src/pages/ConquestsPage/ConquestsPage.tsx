@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { Layout } from "../../components/Layout/Layout";
 import styles from "./ConquestsPageStyles";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
@@ -7,29 +7,56 @@ import { Conquest } from "../../services/types";
 import { RefreshControl } from "react-native-gesture-handler";
 import { getMyConquests } from "../../services/ConquestService";
 import { useAuth } from "../../context/Auth";
+import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
+import { Modal } from "../../components/Modal/Modal";
 
-function ConquestItem({ conquest }: { conquest: Conquest }) {
+function ConquestModal({ conquest, close }: { conquest?: Conquest, close: ()=>void }) {
   return (
-    <View style={styles.conquestItem}>
-      <Image style={styles.conquestImage} source={{ uri: conquest.image }} />
-      <View style={styles.conquestDataBox}>
-        <Text style={styles.conquestTitle}>{conquest.name}</Text>
-        <Text style={styles.conquestText}>{conquest.description}</Text>
-      </View>
-    </View>
+    <Modal
+      body={
+        <View style={styles.modalBody}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={()=>{close()}}><Text style={styles.modalCloseButton}>X</Text></TouchableOpacity>
+          </View>
+          <Text style={styles.modalTitle}>{conquest?.name}</Text>
+          <Image style={styles.modalImage} source={{ uri: conquest?.image }} />
+          <Text style={styles.modalSpan}>Nível 1</Text>
+          <Text style={styles.modalText}>{conquest?.description}</Text>
+        </View>
+      }
+    />
   );
 }
 
-export function ConquestsPage({ navigation }: { navigation: any }) {
+function ConquestItem({ conquest, callback }: { conquest: Conquest, callback: (conquest: Conquest)=>void }) {
+  return (
+    <TouchableOpacity style={styles.conquestItem} onPress={()=>{callback(conquest)}}>
+      <Image style={styles.conquestImage} source={{ uri: conquest.image }} />
+      <Text style={styles.conquestTitle}>{conquest.name}</Text>
+      <Text style={styles.conquestText}>Nível 1</Text>
+    </TouchableOpacity>
+  );
+}
+
+export function ConquestsPage({ 
+  navigation,
+  route: {
+    params: { fromProfile },
+  },
+}: {
+  navigation: any;
+  route: { params: { fromProfile?: boolean} };
+}) {
   const [conquest, setConquest] = useState<Conquest[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { authData } = useAuth();
+  const [showConquest, setShowConquest] = useState(false);
+  const [selectedConquest, setSelectedConquest] = useState<Conquest>();
+  const {authData} = useAuth();
 
   async function loadConquests() {
-    setLoading(true);
+    openLoader();
     const conquests = await getMyConquests();
     setConquest(conquests);
-    setLoading(false);
+    closeLoader();
   }
 
   useEffect(() => {
@@ -42,20 +69,35 @@ export function ConquestsPage({ navigation }: { navigation: any }) {
       navigation={navigation}
       scrollable={false}
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={loadConquests} />
+        <RefreshControl refreshing={false} onRefresh={loadConquests} />
       }
     >
+      {showConquest ? <ConquestModal conquest={selectedConquest} close={()=>{setSelectedConquest(undefined); setShowConquest(false)}}/> : <View/>}
       <View style={{ width: "100%", flex: 1, height: "100%" }}>
         <PageHeader
           title="Conquistas"
           goBackFunction={() => {
-            navigation.navigate("MissionsPage");
+            if(fromProfile) {
+              navigation.navigate("ProfilePage", {id: authData?._id })
+            } else {
+              navigation.navigate("MissionsPage");
+            }
           }}
         />
         <View style={styles.conquestPage}>
-          {conquest.map((conquest, index) => (
-            <ConquestItem key={index} conquest={conquest} />
-          ))}
+          <Text style={styles.homeItemTitle}>Seus emblemas</Text>
+          <View style={styles.conquestsContainer}>
+            {conquest.map((conquest, index) => (
+              <ConquestItem 
+                key={index} 
+                conquest={conquest} 
+                callback={(conquest: Conquest)=>{
+                  setSelectedConquest(conquest);
+                  setShowConquest(true);
+                }}
+              />
+            ))}
+          </View>
         </View>
       </View>
     </Layout>

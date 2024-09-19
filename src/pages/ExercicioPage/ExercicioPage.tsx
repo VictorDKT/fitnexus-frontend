@@ -8,6 +8,7 @@ import { Training, TrainingExercise } from "../../services/types";
 import { finishTraining } from "../../services/TrainingService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
+import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
 
 const saveExerciseData = async (serie: number, exercicios: Record<string, unknown>[], currentExercicieIndex: number, id: string) => {
     try {
@@ -124,11 +125,16 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
     }, [training])
 
     async function finish(){
+        openLoader();
+        
         try { 
             await finishTraining()
         } 
         catch (error) {
         }
+        
+        closeLoader();
+
         Alert.alert("Parabéns!", "Exercícios do dia finalizados.", [{
             text: "Entendi", onPress: async ()=>{
                 await AsyncStorage.removeItem('@exercise_data');
@@ -145,7 +151,7 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
         >
             <View style={{width: "100%", flex: 1, height: "100%"}}>
                 <PageHeader 
-                    title="Treino"
+                    title={training.name}
                     goBackFunction={()=>{
                         setTimer(0);
                         setTimerRunning(false);
@@ -156,20 +162,21 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                     style={{ width: screenWidth, height: imageHeight }}
                     source={{uri: currentExercise?.exercise?.image}}
                 />
-                <View style={styles.progressContainer}>
-                    <Text style={styles.progressTitle}>Progresso do treino:</Text>
-                    <View  style={styles.progressBody}>
-                        <View style={styles.progressBarContainer}><ProgressBar progress={progress}/></View>
-                        <Text style={styles.progressLabel}>{progress}%</Text>
-                    </View>
-                </View>
+                <View style={styles.progressBarContainer}><ProgressBar progress={progress}/></View>
                 <View style={{padding: 20, paddingTop: 5, flex: 1, height: "100%"}}>
                     <View style={styles.exercicieContentBox}>
                         <Text style={styles.exercicieTitle}>{currentExercise?.exercise?.name}</Text>
-                        <Text style={styles.exercicieDescription}>Carga: {currentExercise?.load} KG</Text>
-                        <Text style={styles.exercicieDescription}>Repetições: {currentExercise?.repetitions}</Text>
-                        <Text style={styles.exercicieDescription}>Series: {currentSerie}/{currentExercise?.series}</Text>
                         <Text style={styles.exercicieDescription}>{currentExercise?.exercise?.description}</Text>
+                        <View style={styles.dataContainer}>
+                            <View style={styles.dataContainerItem}>
+                                <Text style={styles.dataContainerTitle}>Séries</Text>
+                                <Text style={styles.dataContainerText}>{currentSerie}/{currentExercise?.series}</Text>
+                            </View>
+                            <View style={styles.dataContainerItem}> 
+                                <Text style={styles.dataContainerTitle}>Repetições</Text>
+                                <Text style={styles.dataContainerText}>{currentExercise?.repetitions}</Text>
+                            </View>
+                        </View>
                     </View>
                     <View style={styles.exercicieFooter}>
                         <View style={styles.exercicieFooterButtonBox1}>

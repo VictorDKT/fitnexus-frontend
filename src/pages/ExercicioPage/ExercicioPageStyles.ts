@@ -9,13 +9,13 @@ const styles = StyleSheet.create({
     exercicieTitle: {
         fontFamily: "Lexend-Bold",
         color: "white",
-        fontSize: 30,
+        fontSize: 25,
         marginBottom: 10,
     },
 
     exercicieDescription: {
         fontSize: 15,
-        color: "white",
+        color: "#A0A0A0",
     },
 
     exercicieFooter: {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     },
 
     progressBarContainer: {
-        flex: 1,
+        flexShrink: 1,
     },
 
     progressLabel: {
@@ -62,6 +62,29 @@ const styles = StyleSheet.create({
         color: "white",
         marginLeft: 10,
         marginTop: -2,
+    },
+
+    dataContainer: {
+        flexShrink: 1,
+        flexDirection: "row",
+        marginTop: 10,
+    },
+
+    dataContainerItem: {
+        marginRight: 20,
+    },
+
+    dataContainerTitle: {
+        fontFamily: "Lexend-Bold",
+        fontSize: 15,
+        marginBottom: 10,
+        color: "white",
+    },
+
+    dataContainerText: {
+        fontFamily: "Lexend-Regular",
+        fontSize: 15,
+        color: "#CCAD8F",
     },
 });
 

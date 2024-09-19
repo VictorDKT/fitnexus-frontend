@@ -3,9 +3,41 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     homeItemTitle: {
         padding: 20,
+        paddingTop: 0,
         color: "white",
         fontFamily: "Lexend-Bold", 
         fontSize: 20,
+    },
+
+    goalText: {
+        padding: 20,
+        paddingTop: 0,
+        paddingBottom: 10,
+        color: "white",
+        fontFamily: "Lexend-Regular", 
+        marginBottom: 20,
+    },
+
+    goalContainer: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 20,
+    },
+
+    goalLabelText: {
+        color: "white",
+        fontFamily: "Lexend-Regular", 
+        fontSize: 15,
+    },
+
+    dateText: {
+        padding: 20,
+        paddingTop: 0,
+        paddingBottom: 10,
+        color: "white",
+        fontFamily: "Lexend-Bold", 
+        fontSize: 15,
     },
 
     challengeContainer: {

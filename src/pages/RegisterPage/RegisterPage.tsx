@@ -8,6 +8,7 @@ import { validateAllInputs, validateInput } from '../../Tools/validateInputs';
 import { editUserRequest, registerRequest } from '../../services/AuthService';
 import { useAuth } from '../../context/Auth';
 import { getProfile } from '../../services/ProfileService';
+import { closeLoader, openLoader } from '../../components/Layout/Loader/Loader';
 
 export function RegisterPage({ 
     navigation,
@@ -25,6 +26,7 @@ export function RegisterPage({
 
     useEffect(()=>{
         if(id) {
+            openLoader();
             getProfile(id || '').then(profile=>{
                 setFormData({
                     name: profile.name,
@@ -36,6 +38,7 @@ export function RegisterPage({
                 });
                 delete fieldsValidations.password;
                 setValidations({});
+                closeLoader();
             });
         } else {
             fieldsValidations.password = ["mandatory", "password"];
@@ -61,20 +64,25 @@ export function RegisterPage({
     }
 
     async function registrar(){
+        openLoader();
         try {
             const data = id 
             ? await editUserRequest(id, (formData.name  as string).trim(), formData.email as string, formData.image as string, formData.goal as string, Number(formData.workouts_per_week), (formData.description  as string).trim())
             : await registerRequest((formData.name as string).trim(), formData.email as string, formData.password as string, formData.image as string, formData.goal as string, Number(formData.workouts_per_week), (formData.description  as string).trim());
-            if (!id)
-                signIn({
+            
+            if (!id) {
+                await signIn({
                     _id: data.id,
                     name: data.name,
                     login: data.login,
                     role: data.role,
                     token: data.access_token
                 });
+            }
+            closeLoader();
             navigation.navigate(id ? 'ProfilePage' :"HomePage", {id: id})
         } catch (error) {
+            closeLoader();
             Alert.alert("OOPS!", "Ocorreu um erro ao tentar registrar, tente novamente mais tarde.")
         }
     }
@@ -204,7 +212,6 @@ export function RegisterPage({
                             const validationResult = validateAllInputs({entity: formData, validations: fieldsValidations});
 
                             if(validationResult.success) {
-                                console.log("a")
                                 registrar()
                             } else {
                                 setValidations(validationResult.errors);

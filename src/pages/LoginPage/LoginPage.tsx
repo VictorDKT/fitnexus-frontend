@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { validateAllInputs, validateInput } from '../../Tools/validateInputs';
 import { loginRequest } from '../../services/AuthService';
 import { useAuth } from '../../context/Auth';
+import { closeLoader, openLoader } from '../../components/Layout/Loader/Loader';
 
 export function LoginPage({navigation}: {navigation: any}) {
     const [formData, setFormData] = useState<Record<string, string>>({});
@@ -24,23 +25,33 @@ export function LoginPage({navigation}: {navigation: any}) {
         password: ["mandatory"],
     }
 
-    async function tryLogin(login: string, password: string){
+    async function tryLogin(login: string, password: string) {
+        openLoader();
         try {
-            // iniciar loading?
             const data = await loginRequest(login, password);
-            await signIn({
-                _id: data.id,
-                name: data.name,
-                login: data.login,
-                role: data.role,
-                token: data.access_token
-            });
-            if(data.role === "trainer") {
-                navigation.navigate("UsersPage")
+
+            if(data) {
+                await signIn({
+                    _id: data.id,
+                    name: data.name,
+                    login: data.login,
+                    role: data.role,
+                    token: data.access_token
+                });
+                closeLoader();
+                if(data.role === "trainer") {
+                    navigation.navigate("UsersPage")
+                } else {
+                    navigation.navigate("HomePage")
+                }
             } else {
-                navigation.navigate("HomePage")
+                closeLoader();
+                Alert.alert("OOPS!", "Login ou senha incorretos.", [{
+                    text: "Entendi", onPress: ()=>{}
+                }]);
             }
         } catch (error) {
+            closeLoader();
             Alert.alert("OOPS!", "Login ou senha incorretos.", [{
                 text: "Entendi", onPress: ()=>{}
             }]);

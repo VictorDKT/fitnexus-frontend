@@ -5,7 +5,7 @@ import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { Button } from "../../components/Button/Button";
 import { useEffect, useState } from "react";
-import { Challenge } from "../../services/types";
+import { Challenge, Profile } from "../../services/types";
 import {
   acceptChallenge,
   getMyChallenges,
@@ -14,6 +14,28 @@ import {
 } from "../../services/ChallengeService";
 import { RefreshControl } from "react-native-gesture-handler";
 import { useAuth } from "../../context/Auth";
+import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
+import { getProfile } from "../../services/ProfileService";
+
+function getFormattedDate(): string {
+  const today = new Date();
+  
+  // Obter o mês atual em formato de texto
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+  const month = monthNames[today.getMonth()];
+  
+  // Obter o primeiro dia do mês atual
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  // Calcular a semana atual
+  const weekNumber = Math.ceil((today.getDate() + firstDayOfMonth.getDay()) / 7);
+  
+  // Retornar a string formatada
+  return `${weekNumber}° Semana, ${month}`;
+}
 
 function calcularDias(startDate: Date, semanas: number) {
   // Cria uma cópia da data de início para não alterar o original
@@ -26,7 +48,7 @@ function calcularDias(startDate: Date, semanas: number) {
   const dataAtual = new Date();
   
   // Calcula a diferença em milissegundos entre as duas datas
-  const diferencaEmMilissegundos = dataFinal - dataAtual;
+  const diferencaEmMilissegundos = (dataFinal as unknown as number) - (dataAtual as unknown as number);
   
   // Converte a diferença de milissegundos para dias
   const diasRestantes = Math.ceil(diferencaEmMilissegundos / (1000 * 60 * 60 * 24));
@@ -42,8 +64,8 @@ export function ChallengeComponent({ challenge }: { challenge: Challenge }) {
  
   return (
     <View style={styles.challengeContainer}>
-      <Text style={styles.progressLabel}>Desafio com {userToShow.name}</Text>
-      <Text style={styles.progressLabel}>Tempo restante: {calcularDias(challenge.start_date, challenge.weeks_duration)}</Text>
+      <Text style={styles.progressLabel}>Desafio com {userToShow.name.trim()}</Text>
+      <Text style={styles.progressLabel}>Tempo restante: {calcularDias(challenge.start_date as unknown as Date, challenge.weeks_duration)}</Text>
       <View style={styles.challengeProgressContainer}>
         <View style={styles.challengeProgressBarContainer}>
           <ProgressBar progress={challenge.progress ? challenge.progress : 0} />
@@ -69,10 +91,12 @@ function SolicitationComponent({
   const userToShow = amIRequester ? challenge.requested : challenge.requester;
 
   async function reject() {
+    openLoader();
     await rejectChallenge(challenge.id);
     await reload();
   }
   async function accept() {
+    openLoader();
     await acceptChallenge(challenge.id);
     await reload();
   }
@@ -84,7 +108,7 @@ function SolicitationComponent({
           style={styles.postUserImage}
         />
         <View>
-          <Text style={styles.postUserName}>{userToShow.name}</Text>
+          <Text style={styles.postUserName}>{userToShow.name.trim()}</Text>
         </View>
       </View>
       <View>
@@ -122,19 +146,22 @@ function SolicitationComponent({
 }
 
 export function MissionsPage({ navigation }: { navigation: any }) {
-  const [loading, setLoading] = useState(false);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [pending, setPending] = useState<Challenge[]>([]);
+  const [profile, setProfile] = useState<Profile>();
+  const { authData } = useAuth();
 
   async function loadAll() {
-    setLoading(true);
-    const [challenges, pending] = await Promise.all([
+    openLoader();
+    const [challenges, pending, profile] = await Promise.all([
       getMyChallenges(),
       getPendingChallenges(),
+      getProfile(authData?._id || ""),
     ]);
     setChallenges(challenges);
     setPending(pending);
-    setLoading(false);
+    setProfile(profile);
+    closeLoader();
   }
 
   useEffect(() => {
@@ -148,20 +175,34 @@ export function MissionsPage({ navigation }: { navigation: any }) {
       hasNavbar={true}
       scrollable={true}
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={loadAll} />
+        <RefreshControl refreshing={false} onRefresh={loadAll} />
       }
     >
       <View>
         <PageHeader
           title={"Missões"}
           notificationsFunction={() => {
-            navigation.navigate("ConquestsPage");
+            navigation.navigate("ConquestsPage", {});
           }}
         />
-        <Text style={styles.homeItemTitle}>Meus desafios</Text>
-        {challenges.map((challenge, index) => (
-          <ChallengeComponent key={index} challenge={challenge} />
-        ))}
+        <View style={{marginTop: 20}}>
+          <Text style={styles.homeItemTitle}>Desafio semanal</Text>
+          <Text style={styles.dateText}>{getFormattedDate()}</Text>
+          <Text style={styles.goalText}>{`Seu objetivo é treinar ${profile?.workouts_per_week} ${ profile?.workouts_per_week !== 1 ? "vezes" : "vez"} essa semana`}</Text>
+          <View style={{padding: 20, paddingTop: 0}}>
+            <View style={styles.goalContainer}>
+              <Text style={styles.goalLabelText}>Missão da semana</Text>
+              <Text style={styles.goalLabelText}>{profile ? parseInt((profile.training_dates.length/profile.workouts_per_week) * 100) : 0}%</Text>
+            </View>
+            {profile && <ProgressBar progress={(profile.training_dates.length/profile.workouts_per_week) * 100}/>}
+          </View>
+        </View>
+        <View>
+          <Text style={styles.homeItemTitle}>Meus desafios</Text>
+          {challenges.map((challenge, index) => (
+            <ChallengeComponent key={index} challenge={challenge} />
+          ))}
+        </View>
         <Text style={styles.homeItemTitle}>Pendentes</Text>
         <View style={styles.solicitationsContainer}>
           {pending.map((challenge, index) => (

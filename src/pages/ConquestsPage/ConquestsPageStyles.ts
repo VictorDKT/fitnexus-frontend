@@ -4,35 +4,83 @@ const styles = StyleSheet.create({
     conquestPage: {
         padding: 20,
     },
-    conquestItem: {
-        borderWidth: 1,
-        borderRadius: 10,
-        borderColor: "white",
+    homeItemTitle: {
+        marginBottom: 20,
+        color: "white",
+        fontFamily: "Lexend-Bold", 
+        fontSize: 20,
+    },
+    conquestsContainer: {
         flexShrink: 1,
         flexDirection: "row",
-        marginBottom: 10,
+        flexWrap: "wrap"
+    },
+    conquestItem: {
+        width: "33.33%",
         padding: 10,
     },
     conquestImage: {
         borderRadius: 5,
-        width: 60,
-        height: 60,
-    },
-    conquestDataBox: {
-        flexShrink: 2,
-        justifyContent: "center",
-        paddingLeft: 20,
+        width: "100%",
+        aspectRatio: 1/1,
     },
     conquestTitle: {
         marginBottom: 5,
         fontFamily: "Lexend-Bold",
         fontSize: 15,
         color: "white",
+        textAlign: "center",
     },
     conquestText: {
         fontFamily: "Lexend-Regular",
         fontSize: 10,
+        color: "#CCAD8F",
+        textAlign: "center",
+    },
+    modalBody: {
+        width: "100%",
+        flexShrink: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingBottom: 20,
+    },
+    modalHeader: {
+        width: "100%",
+        flexShrink: 1,
+        flexDirection: "row",
+        justifyContent: "flex-end",
+    }, 
+    modalCloseButton: {
+        fontFamily: "Lexend-Regular",
+        fontSize: 15,
         color: "white",
+    },
+    modalTitle: {
+        fontFamily: "Lexend-Bold",
+        fontSize: 20,
+        color: "white",
+        marginBottom: 20,
+    },
+    modalText: {
+        fontFamily: "Lexend-Regular",
+        fontSize: 15,
+        color: "white",
+    },
+    modalSpan: {
+        fontFamily: "Lexend-Regular",
+        fontSize: 10,
+        color: "#CCAD8F",
+        margin: 10,
+    },
+    modalSpanBlocked: {
+        fontFamily: "Lexend-Regular",
+        fontSize: 10,
+        color: "#A1A1A1",
+        margin: 10,
+    },
+    modalImage: {
+        width: 120,
+        height: 120,
     },
 });
 

@@ -5,7 +5,7 @@ import { Button } from '../Button/Button';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createPost } from '../../services/PostService';
 
-const SocialPostInput = ({reload}: {reload: () => void}) => {
+const SocialPostInput = ({reload, setLoading}: {reload: () => void, setLoading: (loading: boolean) => void}) => {
   const [image, setImage] = useState('');
   const [text, setText] = useState('');
 
@@ -36,10 +36,12 @@ const SocialPostInput = ({reload}: {reload: () => void}) => {
       Alert.alert('Erro', 'Você precisa escrever algo e adicionar uma imagem para postar')
       return
     }
+    setLoading(true);
     await createPost(text, image)
-    reload()
+    await reload()
     setText('')
     setImage('')
+    setLoading(false);
   }
 
   return (

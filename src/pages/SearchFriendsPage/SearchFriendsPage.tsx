@@ -1,4 +1,4 @@
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
 import { Layout } from "../../components/Layout/Layout";
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import styles from "./SearchFriendsPageStyles";
@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { getFriendSuggestions, requestFriend } from "../../services/FriendsService";
 import { RefreshControl } from "react-native-gesture-handler";
 import { useAuth } from "../../context/Auth";
+import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
+import Spinner from "react-native-loading-spinner-overlay";
 
 function SuggestionComponent({ profile, reload, navigation }: { profile: Profile, reload : ()=>void, navigation: any }) {
   const { authData } = useAuth();
@@ -44,17 +46,27 @@ function SuggestionComponent({ profile, reload, navigation }: { profile: Profile
 export function SearchFriendsPage({ navigation }: { navigation: any }) {
   const [suggestions, setSuggestions] = useState<Profile[]>([]);
   const [nameSearch, setNameSearch] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [localLoader, setLocalLoader] = useState(false);
 
   async function loadSuggestions() {
-    setLoading(true);
     const suggestions = await getFriendSuggestions(nameSearch);
     setSuggestions(suggestions);
-    setLoading(false);
   }
 
   useEffect(() => {
-    loadSuggestions();
+    (async ()=>{
+      openLoader();
+      await loadSuggestions();
+      closeLoader();
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async ()=>{
+      setLocalLoader(true);
+      await loadSuggestions();
+      setLocalLoader(false);
+    })();
   }, [nameSearch]);
 
   return (
@@ -63,7 +75,7 @@ export function SearchFriendsPage({ navigation }: { navigation: any }) {
       navigation={navigation}
       scrollable={true}
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={loadSuggestions} />
+        <RefreshControl refreshing={false} onRefresh={loadSuggestions} />
       }
     >
       <View>
@@ -87,6 +99,11 @@ export function SearchFriendsPage({ navigation }: { navigation: any }) {
             {suggestions.map((profile, index) => (
               <SuggestionComponent key={index} profile={profile} reload={loadSuggestions} navigation={navigation} />
             ))}
+            {
+              localLoader && <View style={{ position: "relative", width: "100%" }}>
+                <ActivityIndicator color="#ff0000" size={"small"} />
+              </View>
+            }
           </View>
         </View>
       </View>

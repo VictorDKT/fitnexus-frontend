@@ -11,9 +11,9 @@ export function PostComponent({ post, reload, setLoading }: { post: Post, reload
   const isLiked = post.likes.some((like) => like.id === authData?._id);
 
   async function like(){
-    setLoading(true)
-    await likePost(post.id)
-    reload()
+    setLoading(true);
+    await likePost(post.id);
+    await reload();
     setLoading(false)
   }
 

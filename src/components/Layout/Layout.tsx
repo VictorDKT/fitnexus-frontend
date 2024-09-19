@@ -19,20 +19,12 @@ interface ILayoutProps {
     hasTreinerBar?: boolean,
 }
 
-export let openLoader: ()=>void;
-export let closeLoader: ()=>void;
-
 export function Layout(props: ILayoutProps) {
-    const [loading, setLoading] = useState(false);
     const { height: screenHeight } = Dimensions.get('window');
     const {authData} = useAuth();
 
-    openLoader = ()=>{setLoading(true)}
-    closeLoader = ()=>{setLoading(false)}
-
     return (
         <View style={styles.layout}>
-            {loading && <ActivityIndicator style={styles.loader} size="large" color="#E71D27" />}
             <View style={{height: props.hasNavbar || props.hasTreinerBar ? screenHeight - 75 : "100%"}}>
                 {!props.scrollable ?
                     <View  style={styles.page}>

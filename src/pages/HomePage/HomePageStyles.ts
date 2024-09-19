@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
 
     homeItemTitle: {
         padding: 20,
+        paddingTop: 0,
         color: "white",
         fontFamily: "Lexend-Bold", 
         fontSize: 15,
@@ -191,6 +192,27 @@ const styles = StyleSheet.create({
     postLiked: {
         fontSize: 25,
         color: "#E71D27",
+    },
+
+    exerciseButtom: {
+        flexShrink: 1, 
+        flexDirection: "row", 
+        alignItems: "center", 
+        padding: 20,
+        borderRadius: 20, 
+        borderWidth: 1, 
+        borderColor: "#303030",
+    },
+
+    exerciseButtomText: {
+        color: "white", 
+        fontSize: 20, 
+        fontFamily: "Lexend-Bold",
+    },
+
+    exerciseButtomIcon: {
+        color: "white", 
+        fontSize: 30,
     },
 });
 

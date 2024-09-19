@@ -10,9 +10,9 @@ import {
   getMySolicitations,
   refuseFriend,
 } from "../../services/FriendsService";
-import { useAuth } from "../../context/Auth";
 import { RefreshControl } from "react-native-gesture-handler";
 import { Profile } from "../../services/types";
+import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
 
 function FriendSolicitation({
   profile,
@@ -22,10 +22,12 @@ function FriendSolicitation({
   reload: () => void;
 }) {
   async function accept() {
+    openLoader();
     await acceptFriend(profile.id);
     reload();
   }
   async function reject() {
+    openLoader();
     await refuseFriend(profile.id);
     reload();
   }
@@ -34,7 +36,7 @@ function FriendSolicitation({
       <View style={styles.postHeader}>
         <Image source={{ uri: profile.image }} style={styles.postUserImage} />
         <View>
-          <Text style={styles.postUserName}>{profile.name}</Text>
+          <Text style={styles.postUserName}>{profile.name.trim()}</Text>
         </View>
       </View>
       <View style={styles.footer}>
@@ -81,17 +83,16 @@ function FriendProfile({ profile, navigation }: { profile: Profile, navigation: 
 export function FriendsPage({ navigation }: { navigation: any }) {
   const [friends, setFriends] = useState<Profile[]>([]);
   const [requests, setRequests] = useState<Profile[]>([]);
-  const [loading, setLoading] = useState(false);
 
   async function loadFriends() {
-    setLoading(true);
+    openLoader();
     const [friends, requests] = await Promise.all([
       getMyFriends(),
       getMySolicitations(),
     ]);
     setFriends(friends);
     setRequests(requests);
-    setLoading(false);
+    closeLoader();
   }
 
   useEffect(() => {
@@ -106,8 +107,8 @@ export function FriendsPage({ navigation }: { navigation: any }) {
       scrollable={true}
       refreshControl={
         <RefreshControl
-            refreshing={loading}
-            onRefresh={loadFriends}
+          refreshing={false}
+          onRefresh={loadFriends}
         />
       }
     >

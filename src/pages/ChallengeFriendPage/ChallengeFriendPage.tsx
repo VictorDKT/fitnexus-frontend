@@ -55,7 +55,7 @@ export function ChallengeFriendPage({
       scrollable={false}
     >
       <PageHeader
-        title={`Desafiar ${requested.name}`}
+        title={`Desafiar ${requested.name.trim()}`}
         goBackFunction={() => {
           navigation.navigate("FriendsPage");
         }}
