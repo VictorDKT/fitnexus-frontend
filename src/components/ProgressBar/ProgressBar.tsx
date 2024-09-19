@@ -8,7 +8,7 @@ interface IProgressBarProps {
 export function ProgressBar(props: IProgressBarProps) {
     return (
         <View style={styles.bar}>
-            <View style={{...styles.progress, width: props.progress+"%"} as StyleProp<ViewStyle>}/>
+            <View style={{...styles.progress, width: (props.progress <= 100 ? props.progress : 100)+"%"} as StyleProp<ViewStyle>}/>
         </View>
     )
 }

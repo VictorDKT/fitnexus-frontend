@@ -5,7 +5,7 @@ import { Button } from '../Button/Button';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createPost } from '../../services/PostService';
 
-const SocialPostInput = ({reload, setLoading}: {reload: () => void, setLoading: (loading: boolean) => void}) => {
+const SocialPostInput = ({noMargin, onFinish, reload, setLoading}: {reload?: () => void, setLoading: (loading: boolean) => void, onFinish?: ()=>void, noMargin?: boolean}) => {
   const [image, setImage] = useState('');
   const [text, setText] = useState('');
 
@@ -38,14 +38,15 @@ const SocialPostInput = ({reload, setLoading}: {reload: () => void, setLoading: 
     }
     setLoading(true);
     await createPost(text, image)
-    await reload()
+    reload && await reload()
     setText('')
     setImage('')
     setLoading(false);
+    onFinish && onFinish()
   }
 
   return (
-    <View style={styles.container}>
+    <View style={!noMargin && styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Escreva algo..."
@@ -54,7 +55,7 @@ const SocialPostInput = ({reload, setLoading}: {reload: () => void, setLoading: 
         onChangeText={setText}
         multiline
       />
-      <View style={{marginTop: 10, flex: 1, flexDirection: "row"}}>
+      <View style={{marginTop: 10, flexShrink: 1, flexDirection: "row"}}>
         {image ? 
             <TouchableOpacity onPress={pickImage}><Image source={{uri: image}} style={styles.imagePreview} /></TouchableOpacity>
             :

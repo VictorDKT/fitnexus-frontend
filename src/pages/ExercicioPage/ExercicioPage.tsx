@@ -4,11 +4,85 @@ import styles from './ExercicioPageStyles';
 import { PageHeader } from "../../components/PageHeader/PageHeader";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/Button/Button";
-import { Training, TrainingExercise } from "../../services/types";
+import { Profile, Training, TrainingExercise } from "../../services/types";
 import { finishTraining } from "../../services/TrainingService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
 import { closeLoader, openLoader } from "../../components/Layout/Loader/Loader";
+import { getProfile } from "../../services/ProfileService";
+import { useAuth } from "../../context/Auth";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Modal } from "../../components/Modal/Modal";
+import Icon from 'react-native-vector-icons/Ionicons';
+import { SocialPostInput } from "../../components/SocialPost/SocialPost";
+
+function FinishModal({ training, profile, close, navigation }: { training: Training, profile: Profile, close: ()=>void, navigation: any }) {
+    const [posting, setPosting] = useState(false);
+    const { authData } = useAuth();
+
+    return (
+      <Modal
+        body={!posting ?
+          <View style={styles.modalBody}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={()=>{close()}}><Text style={styles.modalCloseButton}>X</Text></TouchableOpacity>
+            </View>
+            <Text style={styles.modalTitle}>Parabéns</Text>
+            <View style={{padding: 20, flexShrink: 1, justifyContent: "center", alignItems: "center"}}>
+            <Text style={styles.modalText}>{`Você terminou o treino ${training.name}`}</Text>
+            <View style={styles.progressValueContainer}>
+              <Text style={styles.progressValue}>{profile.training_dates?.length}</Text>
+              <Text style={styles.progressTotalValue}>/{profile.workouts_per_week}</Text>
+            </View>
+            <View style={{flexShrink: 1, flexDirection: "row", marginBottom: 40, marginTop: 10}}><ProgressBar progress={(profile.training_dates.length/profile.workouts_per_week*100)}/></View>
+            <Text style={styles.modalText}>{`Faltam ${profile.workouts_per_week-profile.training_dates.length} dias de treino para concluir sua meta semanal`}</Text>
+            </View>
+          </View>
+          :
+          <View style={{flexShrink: 1, justifyContent: "center", alignItems: "center"}}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={()=>{close()}}><Text style={styles.modalCloseButton}>X</Text></TouchableOpacity>
+            </View>
+            <Text style={styles.modalTitle}>Diga algo</Text>
+            <View style={{width: "100%"}}>
+            <SocialPostInput 
+                noMargin={true}
+                onFinish={()=>{
+                    Alert.alert("Sucesso!", "Post enviado.", [{
+                        text: "Entendi", onPress: ()=>{close()}
+                    }]);
+                }} 
+                setLoading={(value: boolean)=>{
+                    value ? openLoader() : closeLoader()
+                }}
+            />
+            </View>
+            </View>
+        }
+        footer={!posting ?
+            <View style={{flexShrink: 1, flexDirection: "row"}}>
+                <View style={styles.modalButtonBox1}>
+                    <TouchableOpacity style={styles.modalButtonContainer} onPress={()=>{close()}}>
+                        <Icon style={styles.modalButtonIcon} name="checkbox-outline"/>
+                        <Text style={styles.modalButtonText}>
+                            Finalizar
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.modalButtonBox2}>
+                    <TouchableOpacity style={styles.modalButtonContainer} onPress={()=>{setPosting(true)}}>
+                    <Icon style={styles.modalButtonIcon} name="camera-outline"/>
+                        <Text style={styles.modalButtonText}>
+                            Registrar
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            : <View/>
+        }
+      />
+    );
+}
 
 const saveExerciseData = async (serie: number, exercicios: Record<string, unknown>[], currentExercicieIndex: number, id: string) => {
     try {
@@ -40,6 +114,9 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
     const currentExercise: TrainingExercise = exercicios[currentExercicieIndex];
     const [currentSerie, setCurrentSerie] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [profile, setProfile] = useState<Profile>();
+    const [showModal, setShowModal] = useState(false);
+    const { authData } = useAuth();
 
     useEffect(()=>{
         if(exercicios) {
@@ -128,19 +205,16 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
         openLoader();
         
         try { 
-            await finishTraining()
+            await finishTraining();
         } 
         catch (error) {
         }
+
+        const profile = await getProfile(authData?._id || "");
+        setProfile(profile);
+        setShowModal(true);
         
         closeLoader();
-
-        Alert.alert("Parabéns!", "Exercícios do dia finalizados.", [{
-            text: "Entendi", onPress: async ()=>{
-                await AsyncStorage.removeItem('@exercise_data');
-                navigation.navigate("HomePage")
-            }
-        }]);
     }    
 
     return (
@@ -149,6 +223,18 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
             navigation={navigation}
             scrollable={false}
         >
+            {showModal ? 
+                <FinishModal
+                    navigation={navigation}
+                    profile={profile as Profile}
+                    training={training}
+                    close={async ()=>{
+                        setShowModal(false);
+                        await AsyncStorage.removeItem('@exercise_data');
+                        navigation.navigate("HomePage");
+                    }}
+                /> : <View/>
+            }
             <View style={{width: "100%", flex: 1, height: "100%"}}>
                 <PageHeader 
                     title={training.name}
@@ -182,7 +268,7 @@ export function ExercicioPage({ navigation, route: { params: { training },},  }:
                         <View style={styles.exercicieFooterButtonBox1}>
                             <Button
                                 type="secondary"
-                                label={timerRunning ? `${(timer/60) > 9 ? (timer/60).toFixed(0) : "0"+(timer/60).toFixed(0)}:${(timer%60) > 9 ? (timer%60) : "0"+(timer%60)}` : "Pular"}
+                                label={timerRunning ? `${(timer/60) > 9 ? (timer/60).toFixed(0) : "0"+(timer/60).toFixed(0)}:${(timer%60) > 9 ? (timer%60) : "0"+(timer%60)}` : "Pular exercício"}
                                 callback={()=>{
                                     if(!timerRunning) {
                                         const newExercicies = exercicios.filter((exercicie, index)=>index !== currentExercicieIndex);
