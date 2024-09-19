@@ -1,3 +1,4 @@
+import './gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import AppStack from './src/routes/AppStack';
 import { Text, StyleSheet, View } from 'react-native';
