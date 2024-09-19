@@ -20,7 +20,7 @@ function ConquestModal({ conquest, close }: { conquest?: Conquest, close: ()=>vo
           </View>
           <Text style={styles.modalTitle}>{conquest?.name}</Text>
           <Image style={styles.modalImage} source={{ uri: conquest?.image }} />
-          <Text style={styles.modalSpan}>Nível 1</Text>
+          <Text style={styles.modalSpan}>Nível {Math.ceil(Number(conquest?.id) / 2)}</Text>
           <Text style={styles.modalText}>{conquest?.description}</Text>
         </View>
       }
@@ -33,7 +33,7 @@ function ConquestItem({ conquest, callback }: { conquest: Conquest, callback: (c
     <TouchableOpacity style={[styles.conquestItem, conquest.unlocked ? undefined : styles.conquestItemLocked]} onPress={()=>{callback(conquest)}}>
       <Image style={styles.conquestImage} source={{ uri: conquest.image }} />
       <Text style={styles.conquestTitle}>{conquest.name}</Text>
-      <Text style={styles.conquestText}>Nível 1</Text>
+      <Text style={styles.conquestText}>{conquest.unlocked ? `Nível ${Math.ceil(Number(conquest.id) / 2)}` : 'Bloqueado'}</Text>
     </TouchableOpacity>
   );
 }
